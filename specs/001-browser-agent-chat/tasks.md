@@ -128,8 +128,9 @@
     - Added comprehensive settings: OpenRouter config, browser settings, API config, CORS origins
     - Implemented field validators for API key format and confidence threshold (must be 0.90)
     - **Issue**: CORS_origins parsing from .env file - pydantic-settings attempts JSON decode on list fields from env vars
-    - **Attempted fixes**: (1) Used `@field_validator` with `mode="before"` to parse comma-separated string,  (2) Added `SettingsConfigDict` with `env_ignore_empty=True`
-    - **Status**: Tests not yet passing - import errors when loading settings at module level due to .env parsing
+    - ** CC Attempted fixes**: (1) Used `@field_validator` with `mode="before"` to parse comma-separated string,  (2) Added `SettingsConfigDict` with `env_ignore_empty=True`
+    - ** Codex fixes: (1) Removed the tracked backend .env.bak so the existing settings loader can rely on backend/.env for local environment variables. (2) Enhanced the cors_origins validator to handle JSON array strings and comma-separated/plain string inputs without disturbing list values. (3) Extended the settings unit tests to cover JSON-style and comma-separated CORS_ORIGINS inputs. (4) Documented the accepted CORS_ORIGINS formats in the setup instructions to prevent confusion.
+    - **Status**: Need to repeat tests
 
 - **[INFRA-002]** Set up FastAPI application and basic routes (Effort: M)
   - Create `backend/src/main.py` with FastAPI app initialization
