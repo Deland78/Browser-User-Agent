@@ -9,22 +9,19 @@ out/
 
 # Coverage
 coverage/
-
-# Lock files
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
+.nyc_output/
 
 # Generated files
 *.min.js
-*.min.css
+*.bundle.js
 
-# Cache
-.cache/
+# Config files
+vite.config.ts.timestamp-*
 
 # Test reports
 test-results/
 playwright-report/
 
-# Config files
-vite.config.ts.timestamp-*
+# Cache
+.cache/
+.eslintcache

@@ -112,14 +112,24 @@
 
 ### Tasks
 
-- **[INFRA-001]** Implement settings configuration module (Effort: M)
-  - Create `backend/src/config/settings.py` with Pydantic BaseSettings
-  - Load environment variables (OPENROUTER_API_KEY, timeouts, etc.)
-  - Implement validation for required settings
-  - Define defaults: timeout_seconds=20, confidence_threshold=0.90
-  - **Test**: Unit test for settings loading with mock env vars
+- **[INFRA-001]** Implement settings configuration module (Effort: M) **IN PROGRESS**
+  - Create `backend/src/config/settings.py` with Pydantic BaseSettings ✓
+  - Load environment variables (OPENROUTER_API_KEY, timeouts, etc.) ✓
+  - Implement validation for required settings ✓
+  - Define defaults: timeout_seconds=20, confidence_threshold=0.90 ✓
+  - **Test**: Unit test for settings loading with mock env vars ✓ (test file created)
   - **Files**: `backend/src/config/settings.py`, `tests/unit/test_settings.py`
   - **Spec**: FR-020 (20s default timeout), FR-014 (90% confidence)
+  - **Notes**:
+    - Updated settings.py to use Pydantic v2 (pydantic-settings package)
+    - Changed `BaseSettings` import from `pydantic` to `pydantic_settings`
+    - Updated validators from `@validator` to `@field_validator` with `@classmethod`
+    - Changed `class Config` to `model_config = SettingsConfigDict(...)`
+    - Added comprehensive settings: OpenRouter config, browser settings, API config, CORS origins
+    - Implemented field validators for API key format and confidence threshold (must be 0.90)
+    - **Issue**: CORS_origins parsing from .env file - pydantic-settings attempts JSON decode on list fields from env vars
+    - **Attempted fixes**: (1) Used `@field_validator` with `mode="before"` to parse comma-separated string,  (2) Added `SettingsConfigDict` with `env_ignore_empty=True`
+    - **Status**: Tests not yet passing - import errors when loading settings at module level due to .env parsing
 
 - **[INFRA-002]** Set up FastAPI application and basic routes (Effort: M)
   - Create `backend/src/main.py` with FastAPI app initialization
