@@ -113,7 +113,11 @@ npm test
 | `BROWSER_HEADLESS` | Playwright headless toggle |
 | `DATABASE_URL` | Defaults to `sqlite+aiosqlite:///backend/browser_agent.db` |
 | `HOST`, `PORT` | FastAPI bind address |
-| `CORS_ORIGINS` | Comma-separated list of allowed origins |
+| `CORS_ORIGINS` | Comma-separated list or JSON array of allowed origins |
+
+> `CORS_ORIGINS` accepts values like `http://localhost:3000, https://example.com` **or** a JSON array string
+> such as `["http://localhost:3000", "https://example.com"]`. Whitespace around comma-separated entries is
+> ignored.
 
 ### Frontend (`frontend/.env`)
 
