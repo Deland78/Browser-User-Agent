@@ -97,6 +97,22 @@ class TestSettings:
         assert "http://localhost:5173" in settings.cors_origins
         assert "http://127.0.0.1:5173" in settings.cors_origins
 
+    def test_cors_origins_from_json_string(self):
+        """Test that JSON-style string inputs are parsed into a list."""
+
+        json_origins = '["http://localhost:3000", "https://example.com"]'
+        settings = Settings(cors_origins=json_origins)
+
+        assert settings.cors_origins == ["http://localhost:3000", "https://example.com"]
+
+    def test_cors_origins_from_comma_separated_string(self):
+        """Test that comma-separated string inputs are parsed into a list."""
+
+        csv_origins = "http://localhost:3000, https://example.com"
+        settings = Settings(cors_origins=csv_origins)
+
+        assert settings.cors_origins == ["http://localhost:3000", "https://example.com"]
+
     def test_max_timeout_validation(self):
         """Test max_timeout_seconds validation."""
         settings = Settings(max_timeout_seconds=300)

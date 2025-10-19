@@ -1,17 +1,34 @@
 """Application configuration settings."""
 
+import json
 from functools import lru_cache
 from pathlib import Path
-from typing import Annotated
 
-from pydantic import Field, field_validator, BeforeValidator
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 def parse_cors(value: str | list[str]) -> list[str]:
-    """Parse CORS origins from comma-separated string or list."""
+    """Parse CORS origins from string inputs into a list of origins."""
+
+    if isinstance(value, list):
+        return value
+
     if isinstance(value, str):
-        return [origin.strip() for origin in value.split(",") if origin.strip()]
+        stripped_value = value.strip()
+        if not stripped_value:
+            return []
+
+        try:
+            parsed_value = json.loads(stripped_value)
+        except json.JSONDecodeError:
+            parsed_value = None
+
+        if isinstance(parsed_value, list):
+            return [str(origin).strip() for origin in parsed_value if str(origin).strip()]
+
+        return [origin.strip() for origin in stripped_value.split(",") if origin.strip()]
+
     return value
 
 
@@ -52,11 +69,10 @@ class Settings(BaseSettings):
 
     @field_validator("cors_origins", mode="before")
     @classmethod
-    def parse_cors_origins(cls, v):
-        """Parse CORS origins from comma-separated string or list."""
-        if isinstance(v, str):
-            return [origin.strip() for origin in v.split(",") if origin.strip()]
-        return v
+    def parse_cors_origins(cls, v) -> list[str]:
+        """Parse CORS origins from JSON arrays or comma-separated/plain strings."""
+
+        return parse_cors(v)
 
     @field_validator("openrouter_api_key")
     @classmethod
