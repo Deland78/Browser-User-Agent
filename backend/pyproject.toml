@@ -25,8 +25,18 @@ dev = [
   "pytest>=7.4,<8.0",
   "pytest-asyncio>=0.21,<1.0",
   "pytest-cov>=4.1,<5.0",
-  "anyio>=3.7,<4.0"
+  "anyio>=3.7,<4.0",
+  "black>=24.3,<25.0",
+  "mypy>=1.9,<2.0",
+  "ruff>=0.4,<0.5",
+  "sqlalchemy[mypy]>=2.0,<3.0",
 ]
+
+[project.scripts]
+browser-agent-backend = "browser_agent.main:run"
+browser-agent-lint = "browser_agent.cli:lint"
+browser-agent-format = "browser_agent.cli:format"
+browser-agent-typecheck = "browser_agent.cli:typecheck"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -36,3 +46,18 @@ addopts = "--strict-markers --disable-warnings"
 pythonpath = [
   "src"
 ]
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+strict_optional = true
+plugins = [
+  "sqlalchemy.ext.mypy.plugin",
+]
+mypy_path = "src"

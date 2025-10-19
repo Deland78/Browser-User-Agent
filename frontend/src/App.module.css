@@ -1,0 +1,32 @@
+.appShell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-bg);
+  color: var(--text-primary);
+}
+
+.header {
+  padding: 1.5rem clamp(1rem, 3vw, 3rem);
+  border-bottom: 1px solid var(--surface-border);
+  background: var(--surface-elevated);
+  box-shadow: var(--shadow-sm);
+}
+
+.header h1 {
+  margin: 0;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+}
+
+.header p {
+  margin: 0.25rem 0 0;
+  color: var(--text-muted);
+}
+
+.mainContent {
+  flex: 1;
+  padding: clamp(1rem, 3vw, 2rem);
+  display: flex;
+  justify-content: center;
+}
+

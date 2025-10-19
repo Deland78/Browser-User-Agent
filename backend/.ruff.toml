@@ -1,0 +1,26 @@
+[lint]
+select = [
+  "E",
+  "F",
+  "W",
+  "B",
+  "I",
+  "UP",
+  "ASYNC",
+  "S",
+  "PLR",
+  "PLE",
+]
+ignore = ["E501", "B008"]
+preview = true
+
+[lint.isort]
+known-first-party = ["browser_agent"]
+
+[format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+skip-magic-trailing-comma = false
+line-length = 100
+

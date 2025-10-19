@@ -29,7 +29,7 @@
 
 ### Tasks
 
-- **[SETUP-001]** Initialize backend project structure (Effort: M)
+- [X] **[SETUP-001]** Initialize backend project structure (Effort: M)
   - Create `backend/` directory structure per plan.md
   - Set up Python virtual environment (Python 3.11+)
   - Initialize pyproject.toml or requirements.txt with core dependencies
@@ -37,7 +37,7 @@
   - **Test**: `python -m pytest --version` succeeds
   - **Files**: `backend/pyproject.toml`, `backend/src/**/__init__.py`
 
-- **[SETUP-002]** Initialize frontend project structure (Effort: M)
+- [X] **[SETUP-002]** Initialize frontend project structure (Effort: M)
   - Create `frontend/` directory with Vite + React + TypeScript
   - Run `npm create vite@latest frontend -- --template react-ts`
   - Configure TypeScript with strict mode enabled
@@ -45,7 +45,7 @@
   - **Test**: `npm run dev` starts development server
   - **Files**: `frontend/package.json`, `frontend/tsconfig.json`, `frontend/vite.config.ts`
 
-- **[SETUP-003]** Install and configure backend dependencies (Effort: S)
+- [X] **[SETUP-003]** Install and configure backend dependencies (Effort: S)
   - Install FastAPI 0.104+, uvicorn, pydantic
   - Install Playwright 1.40+ for Python (`pip install playwright`)
   - Install pytest, pytest-cov, pytest-asyncio for testing
@@ -54,7 +54,7 @@
   - **Test**: `playwright --version` and `uvicorn --version` succeed
   - **Files**: `backend/requirements.txt` or `backend/pyproject.toml`
 
-- **[SETUP-004]** Install and configure frontend dependencies (Effort: S)
+- [X] **[SETUP-004]** Install and configure frontend dependencies (Effort: S)
   - Install React 18+, TypeScript, Vite 5.0+
   - Install testing libraries: Vitest, React Testing Library
   - Install UI component library (@radix-ui/react per research.md)
@@ -62,7 +62,7 @@
   - **Test**: `npm test` runs (even with zero tests)
   - **Files**: `frontend/package.json`
 
-- **[SETUP-005]** Configure environment variables and secrets (Effort: S)
+- [X] **[SETUP-005]** Configure environment variables and secrets (Effort: S)
   - Copy `.env.example` files to `.env` in backend and frontend directories
   - Document required environment variables in README
   - Set up OPENROUTER_API_KEY in backend/.env (user provides key)
@@ -70,7 +70,7 @@
   - **Test**: Backend can read `os.getenv("OPENROUTER_API_KEY")`
   - **Files**: `backend/.env`, `frontend/.env`, `README.md`
 
-- **[SETUP-006]** Set up linting and code quality tools (Effort: M)
+- [X] **[SETUP-006]** Set up linting and code quality tools (Effort: M)
   - Backend: Install and configure ruff (linter), black (formatter), mypy (type checker)
   - Frontend: Configure ESLint, Prettier for TypeScript
   - Create pre-commit hooks configuration
@@ -94,7 +94,7 @@
   - **Test**: Script creates `browser_agent.db` with expected tables
   - **Files**: `backend/src/db/init.py`, `backend/src/db/models.py`
 
-- **[SETUP-009]** Write project README with quickstart instructions (Effort: S)
+- [X] **[SETUP-009]** Write project README with quickstart instructions (Effort: S)
   - Document prerequisites (Python 3.11+, Node.js 18+, OpenRouter API key)
   - Add setup instructions (virtualenv, npm install, playwright install)
   - Include example commands for running backend and frontend
