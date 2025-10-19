@@ -78,7 +78,7 @@
   - **Test**: `npm run lint` and `ruff check .` execute without errors (on empty codebase)
   - **Files**: `backend/.ruff.toml`, `frontend/.eslintrc.json`, `.pre-commit-config.yaml`
 
-- **[SETUP-007]** Configure logging infrastructure (Effort: S)
+- [X] **[SETUP-007]** Configure logging infrastructure (Effort: S)
   - Set up Python structured logging with JSON formatter
   - Create logger configuration in `backend/src/config/logging.py`
   - Configure log levels (DEBUG for dev, INFO for prod)
@@ -86,7 +86,7 @@
   - **Test**: Logger emits structured JSON logs to file
   - **Files**: `backend/src/config/logging.py`
 
-- **[SETUP-008]** Create database setup script (Effort: M)
+- [X] **[SETUP-008]** Create database setup script (Effort: M)
   - Create SQLite initialization script in `backend/src/db/init.py`
   - Define database schema from data-model.md (ChatMessage, BrowserAction, etc.)
   - Use SQLAlchemy or raw SQL for schema creation
