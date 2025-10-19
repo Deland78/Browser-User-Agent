@@ -1,0 +1,527 @@
+openapi: 3.0.3
+info:
+  title: Browser Control API
+  description: Internal API for browser automation operations
+  version: 1.0.0
+  contact:
+    name: Browser Agent Team
+
+servers:
+  - url: http://localhost:8000/api/v1/browser
+    description: Internal browser control service
+
+tags:
+  - name: context
+    description: Browser context management
+  - name: actions
+    description: Browser actions (navigate, click, type, extract)
+  - name: elements
+    description: Page element inspection
+
+paths:
+  /contexts:
+    post:
+      summary: Create browser context
+      tags: [context]
+      operationId: createBrowserContext
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - session_id
+              properties:
+                session_id:
+                  type: string
+                  format: uuid
+                headless:
+                  type: boolean
+                  default: true
+                viewport:
+                  type: object
+                  properties:
+                    width:
+                      type: integer
+                      default: 1280
+                    height:
+                      type: integer
+                      default: 720
+      responses:
+        '201':
+          description: Browser context created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BrowserContext'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /contexts/{context_id}:
+    parameters:
+      - $ref: '#/components/parameters/ContextId'
+
+    get:
+      summary: Get browser context state
+      tags: [context]
+      operationId: getBrowserContext
+      responses:
+        '200':
+          description: Browser context state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BrowserContext'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: Close browser context
+      tags: [context]
+      operationId: closeBrowserContext
+      responses:
+        '204':
+          description: Browser context closed
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /contexts/{context_id}/navigate:
+    parameters:
+      - $ref: '#/components/parameters/ContextId'
+
+    post:
+      summary: Navigate to URL
+      tags: [actions]
+      operationId: navigate
+      description: Implements FR-004 (navigation commands)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - url
+              properties:
+                url:
+                  type: string
+                  format: uri
+                  example: "https://google.com"
+                wait_for:
+                  type: string
+                  enum: [load, domcontentloaded, networkidle]
+                  default: load
+                timeout_ms:
+                  type: integer
+                  description: Override session timeout for this action
+      responses:
+        '200':
+          description: Navigation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '408':
+          description: Navigation timeout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionResult'
+
+  /contexts/{context_id}/click:
+    parameters:
+      - $ref: '#/components/parameters/ContextId'
+
+    post:
+      summary: Click element
+      tags: [actions]
+      operationId: click
+      description: Implements FR-005 (click interaction)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ElementTarget'
+      responses:
+        '200':
+          description: Click successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          description: Element not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionResult'
+
+  /contexts/{context_id}/type:
+    parameters:
+      - $ref: '#/components/parameters/ContextId'
+
+    post:
+      summary: Type text into element
+      tags: [actions]
+      operationId: type
+      description: Implements FR-005 (type interaction)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/ElementTarget'
+                - type: object
+                  required:
+                    - text
+                  properties:
+                    text:
+                      type: string
+                      example: "search query"
+                    clear_first:
+                      type: boolean
+                      default: true
+                    press_enter:
+                      type: boolean
+                      default: false
+      responses:
+        '200':
+          description: Text entered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          description: Element not found
+
+  /contexts/{context_id}/extract:
+    parameters:
+      - $ref: '#/components/parameters/ContextId'
+
+    post:
+      summary: Extract information from page
+      tags: [actions]
+      operationId: extract
+      description: Implements FR-006a-c (information extraction)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - extraction_type
+              properties:
+                extraction_type:
+                  type: string
+                  enum: [text, attribute, count, list, structured]
+                target:
+                  $ref: '#/components/schemas/ElementTarget'
+                  description: Optional - for specific element extraction
+                query:
+                  type: string
+                  description: Natural language query (e.g., "find all links")
+      responses:
+        '200':
+          description: Information extracted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtractionResult'
+        '404':
+          description: Information not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtractionResult'
+
+  /contexts/{context_id}/scroll:
+    parameters:
+      - $ref: '#/components/parameters/ContextId'
+
+    post:
+      summary: Scroll page or element
+      tags: [actions]
+      operationId: scroll
+      description: Implements FR-005 (scroll interaction)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                direction:
+                  type: string
+                  enum: [up, down, left, right, to_element]
+                  default: down
+                distance:
+                  type: integer
+                  description: Pixels to scroll (if not to_element)
+                target:
+                  $ref: '#/components/schemas/ElementTarget'
+                  description: Required if direction = to_element
+      responses:
+        '200':
+          description: Scroll successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionResult'
+
+  /contexts/{context_id}/elements:
+    parameters:
+      - $ref: '#/components/parameters/ContextId'
+
+    post:
+      summary: Find elements on page
+      tags: [elements]
+      operationId: findElements
+      description: Implements FR-010 (multi-strategy element identification)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ElementTarget'
+      responses:
+        '200':
+          description: Elements found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  elements:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PageElement'
+                  count:
+                    type: integer
+                  search_strategy:
+                    type: string
+        '404':
+          description: No elements found
+
+  /contexts/{context_id}/state:
+    parameters:
+      - $ref: '#/components/parameters/ContextId'
+
+    get:
+      summary: Get current page state
+      tags: [context]
+      operationId: getPageState
+      description: Implements FR-015 (browser state awareness)
+      responses:
+        '200':
+          description: Page state
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  current_url:
+                    type: string
+                  page_title:
+                    type: string
+                  page_state:
+                    type: string
+                    enum: [loading, loaded, error, idle]
+                  visible_elements_count:
+                    type: integer
+                  page_content_summary:
+                    type: string
+                    description: Brief summary for LLM context
+
+components:
+  schemas:
+    BrowserContext:
+      type: object
+      required:
+        - context_id
+        - session_id
+        - current_url
+        - page_state
+        - created_at
+      properties:
+        context_id:
+          type: string
+          format: uuid
+        session_id:
+          type: string
+          format: uuid
+        current_url:
+          type: string
+        page_title:
+          type: string
+        page_state:
+          type: string
+          enum: [loading, loaded, error, idle]
+        created_at:
+          type: string
+          format: date-time
+        last_action_at:
+          type: string
+          format: date-time
+
+    ElementTarget:
+      type: object
+      description: Multi-strategy element targeting (FR-010)
+      properties:
+        selector:
+          type: string
+          description: CSS/XPath selector
+          example: "button.submit"
+        text:
+          type: string
+          description: Exact or partial text content
+          example: "Sign in"
+        aria_label:
+          type: string
+          description: ARIA label attribute
+        role:
+          type: string
+          description: ARIA role
+          example: "button"
+        position:
+          type: integer
+          description: Element position if multiple matches (1-indexed)
+        strategy:
+          type: string
+          enum: [selector, text, aria_label, role, combined]
+          default: combined
+          description: Which strategy to prefer
+
+    PageElement:
+      type: object
+      properties:
+        element_id:
+          type: string
+        selector:
+          type: string
+        element_type:
+          type: string
+        text_content:
+          type: string
+        aria_label:
+          type: string
+        position:
+          type: object
+          properties:
+            x:
+              type: integer
+            y:
+              type: integer
+        is_visible:
+          type: boolean
+        bounding_box:
+          type: object
+          properties:
+            width:
+              type: number
+            height:
+              type: number
+
+    ActionResult:
+      type: object
+      required:
+        - success
+        - duration_ms
+      properties:
+        success:
+          type: boolean
+        duration_ms:
+          type: integer
+        message:
+          type: string
+          example: "Successfully clicked 'Submit' button"
+        error:
+          type: string
+          nullable: true
+        retry_suggestion:
+          type: string
+          nullable: true
+          description: Suggestion for retry (FR-009a)
+
+    ExtractionResult:
+      type: object
+      required:
+        - success
+        - extraction_type
+      properties:
+        success:
+          type: boolean
+        extraction_type:
+          type: string
+        data:
+          oneOf:
+            - type: string
+            - type: number
+            - type: array
+              items: {}
+            - type: object
+          description: Extracted data (type depends on extraction_type)
+        count:
+          type: integer
+          description: For count/list extractions
+        message:
+          type: string
+          description: Human-readable result
+        source_elements:
+          type: array
+          items:
+            type: string
+          description: Selectors of source elements
+
+    Error:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+
+  parameters:
+    ContextId:
+      name: context_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'

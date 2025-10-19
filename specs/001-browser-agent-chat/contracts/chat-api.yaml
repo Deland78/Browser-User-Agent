@@ -1,0 +1,453 @@
+openapi: 3.0.3
+info:
+  title: Browser Agent Chat API
+  description: REST API for browser automation agent chat interface
+  version: 1.0.0
+  contact:
+    name: Browser Agent Team
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Local development server
+
+tags:
+  - name: sessions
+    description: Chat session management
+  - name: messages
+    description: Chat message operations
+  - name: config
+    description: Configuration management
+
+paths:
+  /sessions:
+    post:
+      summary: Create new chat session
+      tags: [sessions]
+      operationId: createSession
+      responses:
+        '201':
+          description: Session created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatSession'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    get:
+      summary: List active sessions
+      tags: [sessions]
+      operationId: listSessions
+      responses:
+        '200':
+          description: List of active sessions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ChatSession'
+
+  /sessions/{session_id}:
+    parameters:
+      - $ref: '#/components/parameters/SessionId'
+
+    get:
+      summary: Get session details
+      tags: [sessions]
+      operationId: getSession
+      responses:
+        '200':
+          description: Session details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatSession'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: End chat session
+      tags: [sessions]
+      operationId: endSession
+      responses:
+        '204':
+          description: Session ended successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /sessions/{session_id}/messages:
+    parameters:
+      - $ref: '#/components/parameters/SessionId'
+
+    get:
+      summary: Get conversation history
+      tags: [messages]
+      operationId: getMessages
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+            maximum: 200
+          description: Number of messages to return
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+          description: Offset for pagination
+      responses:
+        '200':
+          description: List of messages
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  messages:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ChatMessage'
+                  total:
+                    type: integer
+                  has_more:
+                    type: boolean
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    post:
+      summary: Send user command
+      tags: [messages]
+      operationId: sendMessage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+              properties:
+                content:
+                  type: string
+                  minLength: 1
+                  example: "Go to google.com"
+                parent_message_id:
+                  type: string
+                  format: uuid
+                  description: For clarification responses
+      responses:
+        '201':
+          description: Message sent, agent processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatMessage'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /sessions/{session_id}/messages/{message_id}:
+    parameters:
+      - $ref: '#/components/parameters/SessionId'
+      - $ref: '#/components/parameters/MessageId'
+
+    get:
+      summary: Get message details
+      tags: [messages]
+      operationId: getMessage
+      responses:
+        '200':
+          description: Message details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatMessage'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /sessions/{session_id}/messages/{message_id}/cancel:
+    parameters:
+      - $ref: '#/components/parameters/SessionId'
+      - $ref: '#/components/parameters/MessageId'
+
+    post:
+      summary: Cancel ongoing command
+      tags: [messages]
+      operationId: cancelMessage
+      description: Cancel command execution (FR-013 - both button and chat command)
+      responses:
+        '200':
+          description: Command cancelled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatMessage'
+        '400':
+          description: Command not cancellable (already completed/failed)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /sessions/{session_id}/config/timeout:
+    parameters:
+      - $ref: '#/components/parameters/SessionId'
+
+    get:
+      summary: Get current timeout setting
+      tags: [config]
+      operationId: getTimeout
+      responses:
+        '200':
+          description: Current timeout configuration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  timeout_seconds:
+                    type: integer
+                    example: 20
+
+    put:
+      summary: Update page load timeout
+      tags: [config]
+      operationId: updateTimeout
+      description: Implements /timeout slash command (FR-021)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - timeout_seconds
+              properties:
+                timeout_seconds:
+                  type: integer
+                  minimum: 1
+                  maximum: 300
+                  example: 60
+      responses:
+        '200':
+          description: Timeout updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  timeout_seconds:
+                    type: integer
+                  previous_timeout:
+                    type: integer
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /ws/chat/{session_id}:
+    parameters:
+      - $ref: '#/components/parameters/SessionId'
+    get:
+      summary: WebSocket connection for real-time updates
+      tags: [messages]
+      operationId: chatWebSocket
+      description: |
+        WebSocket endpoint for real-time chat updates.
+
+        Message types:
+        - message.created: New message from agent
+        - message.updated: Message status changed
+        - action.progress: Browser action progress update
+        - session.ended: Session terminated
+      responses:
+        '101':
+          description: WebSocket connection established
+        '404':
+          description: Session not found
+
+components:
+  schemas:
+    ChatSession:
+      type: object
+      required:
+        - session_id
+        - created_at
+        - last_activity_at
+        - timeout_seconds
+        - status
+      properties:
+        session_id:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        created_at:
+          type: string
+          format: date-time
+        last_activity_at:
+          type: string
+          format: date-time
+        timeout_seconds:
+          type: integer
+          default: 20
+          minimum: 1
+          maximum: 300
+          description: Page load timeout (FR-020, FR-021)
+        browser_instance_id:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [active, ended, error]
+
+    ChatMessage:
+      type: object
+      required:
+        - message_id
+        - session_id
+        - timestamp
+        - sender
+        - message_type
+        - content
+        - status
+      properties:
+        message_id:
+          type: string
+          format: uuid
+        session_id:
+          type: string
+          format: uuid
+        timestamp:
+          type: string
+          format: date-time
+        sender:
+          type: string
+          enum: [user, agent]
+        message_type:
+          type: string
+          enum: [command, response, clarification_request, clarification_response, error, progress_update]
+        content:
+          type: string
+          description: Message text content
+        metadata:
+          type: object
+          nullable: true
+          description: Additional data (confidence score, command structure, etc.)
+          properties:
+            confidence:
+              type: number
+              format: float
+              minimum: 0.0
+              maximum: 1.0
+            reason:
+              type: string
+            extracted_data:
+              type: object
+        parent_message_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: For clarification threads
+        status:
+          type: string
+          enum: [pending, processing, completed, failed, cancelled]
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/BrowserAction'
+          description: Browser actions associated with this message
+
+    BrowserAction:
+      type: object
+      required:
+        - action_id
+        - action_type
+        - timestamp
+        - result_status
+      properties:
+        action_id:
+          type: string
+          format: uuid
+        action_type:
+          type: string
+          enum: [navigate, click, type, scroll, extract, wait, back, forward, refresh]
+        target:
+          type: object
+          description: Element identifier or URL (varies by action_type)
+        timestamp:
+          type: string
+          format: date-time
+        duration_ms:
+          type: integer
+          nullable: true
+        result_status:
+          type: string
+          enum: [success, failed, timeout, cancelled]
+        result_data:
+          type: object
+          nullable: true
+          description: Extracted data or action results
+        error_message:
+          type: string
+          nullable: true
+
+    Error:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          example: "invalid_request"
+        message:
+          type: string
+          example: "Invalid timeout value. Must be between 1 and 300 seconds."
+        details:
+          type: object
+          nullable: true
+
+  parameters:
+    SessionId:
+      name: session_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+    MessageId:
+      name: message_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  responses:
+    BadRequest:
+      description: Invalid request parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
