@@ -187,23 +187,39 @@
   - **Spec**: Uses claude-3.5-sonnet via OpenRouter (research.md Decision 2)
   - **Tool Schema Reference**: contracts/llm-tools-schema.json for function calling definitions
 
-- **[INFRA-005]** Create ChatSession management service (Effort: M)
-  - Create `backend/src/chat/session.py` with session CRUD operations
-  - Implement in-memory session store (dict) with ChatSession model
-  - Support create, get, update, delete operations
-  - Track session status (active, ended, error)
-  - **Test**: Unit test for session lifecycle
-  - **Files**: `backend/src/chat/session.py`, `tests/unit/test_session.py`
+- [X] **[INFRA-005]** Create ChatSession management service (Effort: M) **✅ COMPLETED**
+  - Create `backend/src/chat/session.py` with session CRUD operations ✓
+  - Implement in-memory session store (dict) with ChatSession model ✓
+  - Support create, get, update, delete operations ✓
+  - Track session status (active, ended, error) ✓
+  - **Test**: Unit test for session lifecycle ✓ (19/19 tests passing)
+  - **Files**: `backend/src/browser_agent/chat/session.py`, `tests/unit/test_session.py`
   - **Spec**: FR-017 (session duration persistence), data-model.md Entity 1
+  - **Implementation Notes**:
+    - ChatSession model with validation per data-model.md Entity 1
+    - SessionService with in-memory dict storage
+    - SessionStatus enum (active, ended, error)
+    - Full CRUD operations: create, get, update, delete, list
+    - Proper validation: timeout 1-300s, timestamps, status transitions
+    - **TDD Results**: 🔴 RED → 🟢 GREEN → 🔵 REFACTOR cycle completed
 
-- **[INFRA-006]** Create ChatMessage storage service (Effort: M)
-  - Create `backend/src/chat/message.py` with message CRUD operations
-  - Implement SQLite storage for messages using database from SETUP-008
-  - Support create, get, list by session_id with pagination
-  - Enforce message validation rules from data-model.md
-  - **Test**: Unit test with in-memory SQLite, integration test with real DB
-  - **Files**: `backend/src/chat/message.py`, `tests/unit/test_message.py`
+- [X] **[INFRA-006]** Create ChatMessage storage service (Effort: M) **✅ COMPLETED**
+  - Create `backend/src/chat/message.py` with message CRUD operations ✓
+  - Implement async SQLite storage for messages using database from SETUP-008 ✓
+  - Support create, get, list by session_id with pagination ✓
+  - Enforce message validation rules from data-model.md ✓
+  - **Test**: Unit test with async SQLite ✓ (17/17 tests passing)
+  - **Files**: `backend/src/browser_agent/chat/message.py`, `tests/unit/test_message.py`, `tests/conftest.py`
   - **Spec**: FR-007 (conversation history), data-model.md Entity 2
+  - **Implementation Notes**:
+    - ChatMessage model with comprehensive validation
+    - MessageService with full async CRUD operations
+    - Message validation: sender/type compatibility, content non-empty, parent references
+    - Pagination support for listing messages (limit/offset)
+    - Session-based isolation and chronological ordering
+    - Fixed SQLAlchemy reserved name conflict (metadata → message_metadata)
+    - Created conftest.py for test database initialization
+    - **TDD Results**: 🔴 RED → 🟢 GREEN → 🔵 REFACTOR cycle completed
 
 - **[INFRA-007]** Implement BrowserContext state management (Effort: M)
   - Create `backend/src/browser/context.py` for browser context state

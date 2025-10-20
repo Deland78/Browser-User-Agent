@@ -15,7 +15,13 @@
       "Bash(pytest tests/unit/ -v --tb=line)",
       "Bash(pytest tests/unit/test_app.py -v)",
       "Bash(mv constitution constitution.md)",
-      "Bash(python -m pytest tests/unit/test_llm_client.py -v --tb=short)"
+      "Bash(python -m pytest tests/unit/test_llm_client.py -v --tb=short)",
+      "Bash(powershell.exe -Command \"if (Test-Path ''C:\\Users\\david\\Browser-User-Agent\\specs\\001-browser-agent-chat\\checklists'') { Get-ChildItem ''C:\\Users\\david\\Browser-User-Agent\\specs\\001-browser-agent-chat\\checklists'' -Filter ''*.md'' | ForEach-Object { $_Name } } else { Write-Output ''NO_CHECKLISTS'' }\")",
+      "Bash(python -m pytest tests/unit/test_session.py -v --tb=short)",
+      "Bash(python -m pytest tests/unit/test_message.py -v --tb=short)",
+      "Bash(python -m pytest tests/unit/test_message.py::TestChatMessage -v --tb=short)",
+      "Bash(python -m pytest tests/unit/test_message.py::TestMessageService -v --tb=short -x)",
+      "Bash(python -m pytest tests/unit/test_message.py::TestMessageService::test_create_message -v --tb=short)"
     ],
     "deny": [],
     "ask": []

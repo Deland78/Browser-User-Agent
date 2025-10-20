@@ -136,7 +136,7 @@ class ChatMessage(Base):
     sender: Mapped[MessageSender] = mapped_column(Enum(MessageSender), nullable=False)
     message_type: Mapped[MessageType] = mapped_column(Enum(MessageType), nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False)
-    metadata: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
+    message_metadata: Mapped[dict[str, Any] | None] = mapped_column("metadata", JSON, nullable=True)
     parent_message_id: Mapped[str | None] = mapped_column(
         String(36),
         ForeignKey("chat_messages.message_id", ondelete="SET NULL"),
