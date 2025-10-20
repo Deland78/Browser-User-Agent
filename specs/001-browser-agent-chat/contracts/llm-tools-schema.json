@@ -1,0 +1,225 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LLM Function Calling Tool Definitions",
+  "description": "OpenRouter-compatible tool schemas for browser automation agent. Used for command interpretation via LLM function calling (claude-3.5-sonnet).",
+  "version": "1.0.0",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "navigate",
+        "description": "Navigate the browser to a specified URL. Use this when the user wants to go to a website or load a new page.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "description": "The URL to navigate to. Must include protocol (http:// or https://). Examples: 'https://google.com', 'http://example.com'",
+              "pattern": "^https?://.*"
+            },
+            "wait_for": {
+              "type": "string",
+              "enum": ["load", "domcontentloaded", "networkidle"],
+              "default": "load",
+              "description": "When to consider navigation complete. 'load' waits for full page load, 'domcontentloaded' waits for DOM ready, 'networkidle' waits for no network activity."
+            }
+          },
+          "required": ["url"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "click",
+        "description": "Click an element on the current page. Use this when the user wants to click a button, link, or other clickable element.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "element_description": {
+              "type": "string",
+              "description": "Human-readable description of the element to click. Examples: 'login button', 'first search result', 'submit form button'. This will be used for multi-strategy element finding."
+            },
+            "selector": {
+              "type": "string",
+              "description": "Optional CSS selector or XPath for precise targeting. If provided, takes precedence over element_description."
+            },
+            "text": {
+              "type": "string",
+              "description": "Optional exact or partial text content of the element to click. Example: 'Sign In', 'Learn More'."
+            },
+            "role": {
+              "type": "string",
+              "enum": ["button", "link", "checkbox", "radio", "tab", "menuitem"],
+              "description": "Optional ARIA role of the element to narrow search."
+            }
+          },
+          "required": ["element_description"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "type_text",
+        "description": "Type text into an input field on the current page. Use this when the user wants to enter text, fill a form field, or search.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "element_description": {
+              "type": "string",
+              "description": "Human-readable description of the input field. Examples: 'email input', 'search box', 'username field'."
+            },
+            "text": {
+              "type": "string",
+              "description": "The text to type into the field."
+            },
+            "selector": {
+              "type": "string",
+              "description": "Optional CSS selector for precise targeting of the input field."
+            },
+            "clear_first": {
+              "type": "boolean",
+              "default": true,
+              "description": "Whether to clear existing text before typing. Default true."
+            },
+            "press_enter": {
+              "type": "boolean",
+              "default": false,
+              "description": "Whether to press Enter after typing (e.g., for search submission). Default false."
+            }
+          },
+          "required": ["element_description", "text"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "extract_information",
+        "description": "Extract information from the current page. Use this when the user asks questions like 'What is...', 'How many...', 'Find...', 'List...'.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "extraction_type": {
+              "type": "string",
+              "enum": ["text", "attribute", "count", "list"],
+              "description": "Type of extraction: 'text' for single text content, 'attribute' for element attributes (href, src), 'count' for counting elements, 'list' for multiple items."
+            },
+            "target_description": {
+              "type": "string",
+              "description": "Description of what to extract. Examples: 'page title', 'all email addresses', 'product price', 'main headings'."
+            },
+            "selector": {
+              "type": "string",
+              "description": "Optional CSS selector for the target element(s)."
+            },
+            "attribute_name": {
+              "type": "string",
+              "description": "Required if extraction_type is 'attribute'. The attribute to extract (e.g., 'href', 'src', 'alt')."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "description": "For 'list' extraction, maximum number of items to return. Default 10."
+            }
+          },
+          "required": ["extraction_type", "target_description"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "scroll",
+        "description": "Scroll the page or a specific element. Use this when the user wants to scroll down, scroll up, or scroll to an element.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "direction": {
+              "type": "string",
+              "enum": ["down", "up", "to_element"],
+              "description": "Scroll direction: 'down' scrolls down one page, 'up' scrolls up one page, 'to_element' scrolls to bring an element into view."
+            },
+            "element_description": {
+              "type": "string",
+              "description": "Required if direction is 'to_element'. Description of the element to scroll to."
+            },
+            "pixels": {
+              "type": "integer",
+              "description": "Optional number of pixels to scroll. If not provided, scrolls one viewport height."
+            }
+          },
+          "required": ["direction"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "configure_timeout",
+        "description": "Change the page load timeout setting for the current session. Use this when the user types '/timeout N' or asks to change timeout settings.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "timeout_seconds": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 300,
+              "description": "New timeout value in seconds. Valid range: 1-300 seconds."
+            }
+          },
+          "required": ["timeout_seconds"]
+        }
+      }
+    }
+  ],
+  "validation_rules": {
+    "url_validation": {
+      "description": "URLs must include http:// or https:// protocol",
+      "regex": "^https?://.*"
+    },
+    "element_description_validation": {
+      "description": "Element descriptions should be clear, specific, and human-readable",
+      "min_length": 3,
+      "max_length": 200
+    },
+    "confidence_thresholds": {
+      "description": "Confidence calculation based on parameter completeness",
+      "high_confidence": "selector OR (element_description AND text) OR (element_description AND role)",
+      "medium_confidence": "element_description only",
+      "low_confidence": "vague or missing descriptions"
+    }
+  },
+  "response_format": {
+    "description": "LLM should respond with function calls in OpenRouter format",
+    "example": {
+      "tool_calls": [
+        {
+          "id": "call_abc123",
+          "type": "function",
+          "function": {
+            "name": "navigate",
+            "arguments": "{\"url\": \"https://google.com\", \"wait_for\": \"load\"}"
+          }
+        }
+      ]
+    }
+  },
+  "multi_step_handling": {
+    "description": "For compound commands, LLM should return multiple tool calls in sequence",
+    "example_command": "Go to amazon.com, search for 'laptop', and show the first 3 results",
+    "example_response": [
+      {"function": "navigate", "arguments": {"url": "https://amazon.com"}},
+      {"function": "type_text", "arguments": {"element_description": "search box", "text": "laptop", "press_enter": true}},
+      {"function": "extract_information", "arguments": {"extraction_type": "list", "target_description": "search results", "limit": 3}}
+    ]
+  },
+  "notes": [
+    "This schema is used by INFRA-004 (OpenRouter LLM client) and US1-002 (LLM integration)",
+    "Tool definitions follow OpenAI/OpenRouter function calling format",
+    "Element descriptions are intentionally flexible to support natural language interpretation",
+    "Confidence evaluation (US5-001) analyzes parameter completeness from these tool calls"
+  ]
+}

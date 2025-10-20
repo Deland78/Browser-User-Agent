@@ -117,9 +117,10 @@
   - Load environment variables (OPENROUTER_API_KEY, timeouts, etc.) ✓
   - Implement validation for required settings ✓
   - Define defaults: timeout_seconds=20, confidence_threshold=0.90 ✓
+  - **Timeout Architecture**: Default timeout (20s) defined in settings, copied to session on creation, propagated to browser driver ✓
   - **Test**: Unit test for settings loading with mock env vars ✓
   - **Files**: `backend/src/config/settings.py`, `tests/unit/test_settings.py`
-  - **Spec**: FR-020 (20s default timeout), FR-014 (90% confidence)
+  - **Spec**: FR-020 (20s default timeout), FR-014 (90% confidence), FR-021/022 (timeout configuration)
   - **Notes**:
     - Updated settings.py to use Pydantic v2 (pydantic-settings package)
     - Changed `BaseSettings` import from `pydantic` to `pydantic_settings`
@@ -166,15 +167,22 @@
     - Integration tests created for real browser testing (marked with @pytest.mark.integration)
     - Proper cleanup on context close and service shutdown
 
-- **[INFRA-004]** Implement OpenRouter LLM client (Effort: L)
+- **[INFRA-004]** Implement OpenRouter LLM client (Effort: L) **⚠️ CRITICAL BLOCKER**
+  - **Status**: INCOMPLETE - Blocks US1-002, US2-002, US3-001, US4-001, US5-003
+  - **Priority**: MUST complete before starting Phase 2 (User Story 1)
   - Create `backend/src/agent/llm_client.py` with LLMClient protocol
   - Implement OpenRouter API client using httpx or OpenAI-compatible library
   - Support chat completions endpoint: `https://openrouter.ai/api/v1/chat/completions`
   - Add API key authentication, headers (Authorization, HTTP-Referer)
   - Implement retry logic for transient failures
+  - **TDD Steps**:
+    1. 🔴 Write test for LLMClient.chat_completion() returning mocked response
+    2. 🟢 Implement minimal OpenRouter HTTP client
+    3. 🔵 Add retry logic, error handling, and timeouts
   - **Test**: Unit test with mocked HTTP responses, integration test with real API (optional)
   - **Files**: `backend/src/agent/llm_client.py`, `tests/unit/test_llm_client.py`
   - **Spec**: Uses claude-3.5-sonnet via OpenRouter (research.md Decision 2)
+  - **Tool Schema Reference**: See contracts/llm-tools-schema.json for function calling definitions
 
 - **[INFRA-005]** Create ChatSession management service (Effort: M)
   - Create `backend/src/chat/session.py` with session CRUD operations
@@ -224,12 +232,17 @@
 
 - **[US1-002]** Integrate LLM for command interpretation (Effort: L)
   - Enhance CommandParser to call LLMClient.parse_command()
-  - Define tool definitions for LLM function calling (navigate, click, type per agent-interface.md lines 310-347)
+  - Load tool definitions from contracts/llm-tools-schema.json (6 tools: navigate, click, type_text, extract_information, scroll, configure_timeout)
+  - Send tool schemas with LLM requests using OpenRouter function calling format
   - Map LLM tool calls to BrowserAction objects
   - Handle LLM errors gracefully (timeout, API errors)
-  - **Test**: Integration test with mocked LLM responses
+  - **TDD Steps**:
+    1. 🔴 Write test: "Go to google.com" → navigate tool call with url parameter
+    2. 🟢 Implement tool schema loading and LLM request formatting
+    3. 🔵 Add tool call → BrowserAction mapping
+  - **Test**: Integration test with mocked LLM responses returning tool calls
   - **Files**: `backend/src/agent/command_parser.py`, `tests/integration/test_agent_llm.py`
-  - **Spec**: FR-003, agent-interface.md LLMClient interface
+  - **Spec**: FR-003, agent-interface.md LLMClient interface, contracts/llm-tools-schema.json
 
 - **[US1-003]** Implement navigation action handler (Effort: M)
   - Create `backend/src/browser/actions.py` with NavigateAction handler
@@ -265,6 +278,12 @@
   - Use Playwright locators (get_by_text, get_by_label, get_by_role, locator)
   - Return list of matching PageElement objects
   - Support combined strategy (try multiple approaches)
+  - **TDD Steps**:
+    1. 🔴 Write test: find_by_text("Login") returns button element
+    2. 🟢 Implement text-based finding using page.get_by_text()
+    3. 🔴 Write test: find_by_role("button") returns all buttons
+    4. 🟢 Add role-based strategy using page.get_by_role()
+    5. 🔵 Refactor to unified find_elements() with strategy parameter
   - **Test**: Unit test for each strategy, integration test on real HTML page
   - **Files**: `backend/src/browser/element_finder.py`, `tests/unit/test_element_finder.py`
   - **Spec**: FR-010 (multi-strategy identification), browser-api.yaml /elements endpoint
@@ -582,6 +601,14 @@
   - Calculate confidence score using weighted formula (lines 116-124)
   - Factors: command_clarity (40%), element_ambiguity (35%), context_availability (15%), action_complexity (10%)
   - Return ConfidenceEvaluation with score and factors breakdown
+  - **TDD Steps**:
+    1. 🔴 Write test: Clear command "Go to google.com" → confidence ≥ 0.95
+    2. 🟢 Implement basic confidence calculation with command_clarity factor
+    3. 🔴 Write test: Ambiguous "Click the button" with 5 buttons → confidence < 0.50
+    4. 🟢 Add element_ambiguity factor based on matching element count
+    5. 🔴 Write test: Weighted formula produces 0-100 scale scores
+    6. 🟢 Implement full weighted calculation with all 4 factors
+    7. 🔵 Refactor to separate factor calculation methods
   - **Test**: Unit test confidence calculation for various scenarios
   - **Files**: `backend/src/agent/confidence.py`, `tests/unit/test_confidence.py`
   - **Spec**: FR-014 (0-100% scale), FR-014b (factors), agent-interface.md ConfidenceEvaluator
@@ -917,12 +944,35 @@ Phase 2: US1 (Basic Commands) ← MVP Core
 
 ## Notes for Implementation
 
-### Test-Driven Development (TDD)
-Per constitution, write tests BEFORE implementation for all tasks:
-1. Write failing test for acceptance criteria
-2. Implement minimal code to pass test
-3. Refactor while keeping tests green
-4. Repeat
+### Test-Driven Development (TDD) - MANDATORY
+
+**⚠️ CONSTITUTIONAL REQUIREMENT: All production code MUST follow RED-GREEN-REFACTOR cycle**
+
+Per constitution Section 3.1, TDD is non-negotiable:
+
+**Before writing ANY production code:**
+
+1. **🔴 RED: Write failing test first**
+   - Write test describing desired behavior
+   - Run test and verify it FAILS
+   - If test passes without implementation, you haven't written a valid test
+
+2. **🟢 GREEN: Make test pass with minimal code**
+   - Write simplest implementation to pass
+   - No extra features, no premature optimization
+   - Run test and verify it PASSES
+
+3. **🔵 REFACTOR: Improve while keeping tests green**
+   - Clean up duplication, improve names
+   - Run tests after each change
+   - All tests must stay green
+
+**Code Review Verification:**
+- Git commits must show test-before-code pattern
+- Evidence of failing tests (RED phase) required
+- **Violations = Automatic PR Rejection**
+
+**For tasks marked with specific "TDD Steps", follow those examples. For all other tasks, apply the RED-GREEN-REFACTOR cycle to the acceptance criteria listed in the task.**
 
 ### Incremental Delivery
 Deliver working software at the end of each phase:

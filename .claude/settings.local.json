@@ -13,7 +13,8 @@
       "Bash(pytest tests/unit/ -v --tb=no --co -q)",
       "Bash(pytest tests/unit/ --collect-only -q)",
       "Bash(pytest tests/unit/ -v --tb=line)",
-      "Bash(pytest tests/unit/test_app.py -v)"
+      "Bash(pytest tests/unit/test_app.py -v)",
+      "Bash(mv constitution constitution.md)"
     ],
     "deny": [],
     "ask": []

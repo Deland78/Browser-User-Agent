@@ -28,7 +28,13 @@ Build an AI-powered browser automation agent with a chat interface that allows u
 - 90% accuracy for element identification (SC-005)
 
 **Constraints**:
-- 20-second default page load timeout (configurable via /timeout command)
+- **Timeout Management Architecture**:
+  - Default page load timeout: 20 seconds (FR-020)
+  - User-configurable via `/timeout N` slash command (FR-021)
+  - Resets to 20s default on application restart (FR-022)
+  - Timeout propagation: Settings → Session → Browser Driver → Playwright page.goto()
+  - Stored per-session in ChatSession.timeout_seconds (not global)
+  - Applied to all browser actions (navigate, click with wait, element finding)
 - 90% confidence threshold for command execution (must clarify if below)
 - Single browser window/tab for MVP
 - Ephemeral sessions (no persistence across restarts)

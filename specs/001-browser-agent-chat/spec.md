@@ -123,10 +123,11 @@ Users need the agent to proactively ask for clarification when it's uncertain ho
 - **FR-003**: Agent MUST interpret natural language commands and translate them into browser actions (navigate, click, type, extract data)
 - **FR-004**: Agent MUST execute browser navigation commands (go to URL, refresh, go back, go forward)
 - **FR-005**: Agent MUST execute browser interaction commands (click elements, type text, submit forms, scroll)
-- **FR-006**: Agent MUST interpret information-seeking questions from users (e.g., "What is...", "Find...", "How many...", "List...")
-- **FR-006a**: Agent MUST locate requested information on the current page by searching through visible content and page structure
-- **FR-006b**: Agent MUST extract and format the found information clearly in the chat window
-- **FR-006c**: Agent MUST support extraction of various information types (text content, counts, lists, attributes, structured data)
+- **FR-006**: Agent MUST support information extraction with the following capabilities:
+  - Interpret information-seeking questions from users (e.g., "What is...", "Find...", "How many...", "List...")
+  - Locate requested information on the current page by searching through visible content and page structure
+  - Extract and format the found information clearly in the chat window with contextual presentation
+  - Support multiple extraction types: text content, element counts, lists, attributes (href, src), and structured data
 - **FR-007**: System MUST maintain conversation history within a session showing all user prompts and agent responses
 - **FR-008**: Agent MUST report successful completion of commands with confirmation messages
 - **FR-009**: Agent MUST report failures with clear error messages explaining what went wrong
@@ -163,8 +164,8 @@ Users need the agent to proactively ask for clarification when it's uncertain ho
 
 - **SC-001**: Users can successfully execute simple single-step browser commands (navigate, click, type) with 95% success rate
 - **SC-002**: Agent responds to user commands within 3 seconds for simple actions and within 10 seconds for complex multi-step tasks
-- **SC-003**: Users can ask for information on the page and receive the found information printed clearly in the chat window within 5 seconds
-- **SC-003a**: Agent successfully finds and extracts requested information in 90% of cases where the information exists on the page
+- **SC-003**: Users can ask for information on the page and receive the found information printed clearly in the chat window within 5 seconds (measures FR-006 extraction performance)
+- **SC-003a**: Agent successfully finds and extracts requested information in 90% of cases where the information exists on the page (measured by manual testing with known-present data)
 - **SC-004**: System maintains conversation history of at least 100 message pairs (command + response) without performance degradation
 - **SC-005**: Agent correctly identifies and interacts with common web elements (buttons, links, inputs) with 90% accuracy
 - **SC-006**: Agent requests clarification in 100% of cases where confidence is below 90%, preventing incorrect guesses
