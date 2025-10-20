@@ -14,7 +14,8 @@
       "Bash(pytest tests/unit/ --collect-only -q)",
       "Bash(pytest tests/unit/ -v --tb=line)",
       "Bash(pytest tests/unit/test_app.py -v)",
-      "Bash(mv constitution constitution.md)"
+      "Bash(mv constitution constitution.md)",
+      "Bash(python -m pytest tests/unit/test_llm_client.py -v --tb=short)"
     ],
     "deny": [],
     "ask": []

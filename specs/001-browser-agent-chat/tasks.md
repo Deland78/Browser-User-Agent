@@ -167,22 +167,25 @@
     - Integration tests created for real browser testing (marked with @pytest.mark.integration)
     - Proper cleanup on context close and service shutdown
 
-- **[INFRA-004]** Implement OpenRouter LLM client (Effort: L) **⚠️ CRITICAL BLOCKER**
-  - **Status**: INCOMPLETE - Blocks US1-002, US2-002, US3-001, US4-001, US5-003
-  - **Priority**: MUST complete before starting Phase 2 (User Story 1)
-  - Create `backend/src/agent/llm_client.py` with LLMClient protocol
-  - Implement OpenRouter API client using httpx or OpenAI-compatible library
-  - Support chat completions endpoint: `https://openrouter.ai/api/v1/chat/completions`
-  - Add API key authentication, headers (Authorization, HTTP-Referer)
-  - Implement retry logic for transient failures
-  - **TDD Steps**:
-    1. 🔴 Write test for LLMClient.chat_completion() returning mocked response
-    2. 🟢 Implement minimal OpenRouter HTTP client
-    3. 🔵 Add retry logic, error handling, and timeouts
-  - **Test**: Unit test with mocked HTTP responses, integration test with real API (optional)
-  - **Files**: `backend/src/agent/llm_client.py`, `tests/unit/test_llm_client.py`
+- [X] **[INFRA-004]** Implement OpenRouter LLM client (Effort: L) **✅ COMPLETED**
+  - **Status**: COMPLETE - TDD cycle successful (11/11 tests passing)
+  - **Implementation Notes**:
+    - Implemented LLMClient protocol for extensibility ✓
+    - Created OpenRouterClient with httpx AsyncClient ✓
+    - Support for chat completions endpoint: `https://openrouter.ai/api/v1/chat/completions` ✓
+    - API key authentication via Bearer token + HTTP-Referer headers ✓
+    - Exponential backoff retry logic for transient failures (429, 503, 504) ✓
+    - Proper error handling: LLMAPIError, LLMTimeoutError, LLMConnectionError ✓
+    - Structured logging for debugging and monitoring ✓
+    - Resource cleanup with async context manager support ✓
+  - **TDD Results**:
+    - 🔴 RED: 11 tests written first, all failed as expected
+    - 🟢 GREEN: Implementation completed, all 11 tests passing
+    - 🔵 REFACTOR: Code structured with proper separation, docstrings, type hints
+  - **Test Coverage**: 11 unit tests covering initialization, API calls, error handling, retries, timeouts
+  - **Files**: `backend/src/browser_agent/agent/llm_client.py`, `tests/unit/test_llm_client.py`
   - **Spec**: Uses claude-3.5-sonnet via OpenRouter (research.md Decision 2)
-  - **Tool Schema Reference**: See contracts/llm-tools-schema.json for function calling definitions
+  - **Tool Schema Reference**: contracts/llm-tools-schema.json for function calling definitions
 
 - **[INFRA-005]** Create ChatSession management service (Effort: M)
   - Create `backend/src/chat/session.py` with session CRUD operations
