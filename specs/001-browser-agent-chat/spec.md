@@ -3,6 +3,7 @@
 **Feature Branch**: `001-browser-agent-chat`
 **Created**: 2025-10-18
 **Status**: Draft
+**Technology Stack**: Python 3.11+ | Playwright | OpenRouter.ai (claude-3.5-sonnet) | FastAPI | React + TypeScript + Vite
 **Input**: User description: "create an agent that can use a browser tool to perform actions in the browser.  The agent will need a chat window where the user will enter prompts and the agent will respond with results."
 
 ## User Scenarios & Testing *(mandatory)*
@@ -123,11 +124,9 @@ Users need the agent to proactively ask for clarification when it's uncertain ho
 - **FR-003**: Agent MUST interpret natural language commands and translate them into browser actions (navigate, click, type, extract data)
 - **FR-004**: Agent MUST execute browser navigation commands (go to URL, refresh, go back, go forward)
 - **FR-005**: Agent MUST execute browser interaction commands (click elements, type text, submit forms, scroll)
-- **FR-006**: Agent MUST support information extraction with the following capabilities:
-  - Interpret information-seeking questions from users (e.g., "What is...", "Find...", "How many...", "List...")
-  - Locate requested information on the current page by searching through visible content and page structure
-  - Extract and format the found information clearly in the chat window with contextual presentation
-  - Support multiple extraction types: text content, element counts, lists, attributes (href, src), and structured data
+- **FR-006**: Agent MUST extract information from web pages based on user questions and present results clearly in the chat window
+- **FR-006a**: Agent MUST interpret information-seeking questions from users (e.g., "What is...", "Find...", "How many...", "List...")
+- **FR-006b**: Agent MUST support multiple extraction types: text content, element counts, lists, and element attributes (href, src)
 - **FR-007**: System MUST maintain conversation history within a session showing all user prompts and agent responses
 - **FR-008**: Agent MUST report successful completion of commands with confirmation messages
 - **FR-009**: Agent MUST report failures with clear error messages explaining what went wrong
@@ -146,7 +145,7 @@ Users need the agent to proactively ask for clarification when it's uncertain ho
 - **FR-017**: System MUST preserve conversation history for the duration of the session
 - **FR-018**: Chat interface MUST support scrolling to view previous conversation history
 - **FR-019**: Agent MUST format responses clearly distinguishing between actions taken and information returned
-- **FR-020**: System MUST handle timeout scenarios for slow-loading pages with a default timeout of 20 seconds
+- **FR-020**: System MUST abort navigation and browser actions that exceed the timeout threshold (default: 20 seconds), report the timeout error to the user with the exceeded duration, and provide retry suggestions (e.g., "Try increasing timeout with /timeout 60")
 - **FR-021**: System MUST allow users to configure the page load timeout using a slash command (e.g., "/timeout 60" to set 60-second timeout)
 - **FR-022**: System MUST reset the timeout configuration to the 20-second default when the application restarts
 
@@ -179,7 +178,7 @@ Users need the agent to proactively ask for clarification when it's uncertain ho
 ## Assumptions
 
 - Users have basic familiarity with web browsers and how web pages work (understanding concepts like "button", "link", "form")
-- The browser automation tool has capabilities to interact with standard HTML elements and doesn't require special configuration
+- The browser automation tool has capabilities to interact with common HTML elements (buttons, links, inputs, textareas, selects, checkboxes, radio buttons, forms) and doesn't require special configuration. Complex elements (shadow DOM, iframes, canvas) are out of scope for MVP.
 - Users will primarily interact with public websites that don't require complex authentication flows for the MVP
 - Natural language processing can interpret common browser action verbs (go, click, type, search, extract, find, etc.)
 - The system will start with a single browser window/tab (multi-tab support is out of scope for initial version)

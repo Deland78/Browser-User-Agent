@@ -222,6 +222,8 @@
 **Dependency**: Phase 1 complete
 **Deliverable**: Users can navigate, click, type via natural language commands
 
+**⚠️ TDD MANDATORY**: All tasks in this phase MUST follow RED-GREEN-REFACTOR cycle per constitution Section 3.1. Write failing tests first, make them pass with minimal code, then refactor. See "Test-Driven Development (TDD) - MANDATORY" section below for details.
+
 ### Tasks
 
 - **[US1-001]** Implement command parser foundation (Effort: L)
@@ -257,24 +259,6 @@
   - **Files**: `backend/src/browser/actions.py`, `tests/unit/test_actions.py`, `tests/integration/test_navigation.py`
   - **Spec**: FR-004 (navigation commands), browser-api.yaml /navigate endpoint
 
-- **[US1-004]** Implement click action handler (Effort: M)
-  - Add ClickAction handler to `actions.py`
-  - Use ElementFinder to locate target element (see US1-006)
-  - Implement click() using Playwright locator.click()
-  - Handle click failures (element not found, not clickable)
-  - **Test**: Unit test with mocked elements, integration test clicking real button
-  - **Files**: `backend/src/browser/actions.py`, `tests/unit/test_actions.py`, `tests/integration/test_click.py`
-  - **Spec**: FR-005 (click interaction), browser-api.yaml /click endpoint
-
-- **[US1-005]** Implement type action handler (Effort: M)
-  - Add TypeAction handler to `actions.py`
-  - Locate input element using ElementFinder
-  - Implement type() using Playwright locator.fill() or type()
-  - Support clear_first and press_enter options (browser-api.yaml)
-  - **Test**: Unit test with mocked inputs, integration test typing into real form
-  - **Files**: `backend/src/browser/actions.py`, `tests/unit/test_actions.py`, `tests/integration/test_type.py`
-  - **Spec**: FR-005 (type interaction), browser-api.yaml /type endpoint
-
 - **[US1-006]** Implement multi-strategy element finder (Effort: L)
   - Create `backend/src/browser/element_finder.py` with ElementFinder class
   - Implement find_elements() method with strategies: selector, text, aria_label, role
@@ -290,6 +274,24 @@
   - **Test**: Unit test for each strategy, integration test on real HTML page
   - **Files**: `backend/src/browser/element_finder.py`, `tests/unit/test_element_finder.py`
   - **Spec**: FR-010 (multi-strategy identification), browser-api.yaml /elements endpoint
+
+- **[US1-004]** Implement click action handler (Effort: M)
+  - Add ClickAction handler to `actions.py`
+  - Use ElementFinder (from US1-006) to locate target element
+  - Implement click() using Playwright locator.click()
+  - Handle click failures (element not found, not clickable)
+  - **Test**: Unit test with mocked elements, integration test clicking real button
+  - **Files**: `backend/src/browser/actions.py`, `tests/unit/test_actions.py`, `tests/integration/test_click.py`
+  - **Spec**: FR-005 (click interaction), browser-api.yaml /click endpoint
+
+- **[US1-005]** Implement type action handler (Effort: M)
+  - Add TypeAction handler to `actions.py`
+  - Locate input element using ElementFinder (from US1-006)
+  - Implement type() using Playwright locator.fill() or type()
+  - Support clear_first and press_enter options (browser-api.yaml)
+  - **Test**: Unit test with mocked inputs, integration test typing into real form
+  - **Files**: `backend/src/browser/actions.py`, `tests/unit/test_actions.py`, `tests/integration/test_type.py`
+  - **Spec**: FR-005 (type interaction), browser-api.yaml /type endpoint
 
 - **[US1-007]** Implement CommandExecutor for action orchestration (Effort: L)
   - Create `backend/src/agent/executor.py` with CommandExecutor class
@@ -372,6 +374,8 @@
 **Purpose**: Enable users to ask for information and receive results in chat
 **Dependency**: Phase 2 complete (US1 working)
 **Deliverable**: Agent can extract text, counts, lists from pages
+
+**⚠️ TDD MANDATORY**: All tasks in this phase MUST follow RED-GREEN-REFACTOR cycle per constitution Section 3.1. Write failing tests first, make them pass with minimal code, then refactor. See "Test-Driven Development (TDD) - MANDATORY" section below for details.
 
 ### Tasks
 
@@ -457,6 +461,8 @@
 **Dependency**: Phase 3 complete
 **Deliverable**: Agent handles multi-step commands and reports progress
 
+**⚠️ TDD MANDATORY**: All tasks in this phase MUST follow RED-GREEN-REFACTOR cycle per constitution Section 3.1. Write failing tests first, make them pass with minimal code, then refactor. See "Test-Driven Development (TDD) - MANDATORY" section below for details.
+
 ### Tasks
 
 - **[US3-001]** Enhance command parser for multi-step commands (Effort: M)
@@ -535,6 +541,8 @@
 **Dependency**: Phase 2 complete (can be parallel with Phase 4)
 **Deliverable**: Agent uses conversation history to resolve references
 
+**⚠️ TDD MANDATORY**: All tasks in this phase MUST follow RED-GREEN-REFACTOR cycle per constitution Section 3.1. Write failing tests first, make them pass with minimal code, then refactor. See "Test-Driven Development (TDD) - MANDATORY" section below for details.
+
 ### Tasks
 
 - **[US4-001]** Enhance command parser with conversation context (Effort: M)
@@ -595,6 +603,8 @@
 **Purpose**: Implement 90% confidence threshold with clarification flow
 **Dependency**: Phase 2 complete
 **Deliverable**: Agent asks clarifying questions when confidence < 90%
+
+**⚠️ TDD MANDATORY**: All tasks in this phase MUST follow RED-GREEN-REFACTOR cycle per constitution Section 3.1. Write failing tests first, make them pass with minimal code, then refactor. See "Test-Driven Development (TDD) - MANDATORY" section below for details.
 
 ### Tasks
 
@@ -702,6 +712,8 @@
 **Purpose**: Implement timeout configuration, cancellation, and UX improvements
 **Dependency**: Phase 2 complete
 **Deliverable**: Timeout slash command, cancel button, improved error messages
+
+**⚠️ TDD MANDATORY**: All tasks in this phase MUST follow RED-GREEN-REFACTOR cycle per constitution Section 3.1. Write failing tests first, make them pass with minimal code, then refactor. See "Test-Driven Development (TDD) - MANDATORY" section below for details.
 
 ### Tasks
 

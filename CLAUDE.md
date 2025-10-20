@@ -3,7 +3,7 @@
 Auto-generated from all feature plans. Last updated: 2025-10-18
 
 ## Active Technologies
-- Python 3.11+ + NEEDS CLARIFICATION (Browser automation library - Playwright vs Selenium vs Puppeteer; LLM/NLP for command interpretation - OpenAI API vs Anthropic vs local model; Web framework - FastAPI vs Flask vs Django; Frontend framework - React vs Vue vs vanilla JS) (001-browser-agent-chat)
+- Python 3.11+ | Playwright (browser automation) | OpenRouter.ai/claude-3.5-sonnet (LLM) | FastAPI (backend) | React + TypeScript + Vite (frontend) (001-browser-agent-chat)
 
 ## Project Structure
 ```
@@ -19,7 +19,7 @@ cd src; pytest; ruff check .
 Python 3.11+: Follow standard conventions
 
 ## Recent Changes
-- 001-browser-agent-chat: Added Python 3.11+ + NEEDS CLARIFICATION (Browser automation library - Playwright vs Selenium vs Puppeteer; LLM/NLP for command interpretation - OpenAI API vs Anthropic vs local model; Web framework - FastAPI vs Flask vs Django; Frontend framework - React vs Vue vs vanilla JS)
+- 001-browser-agent-chat: Finalized technology stack - Python 3.11+ | Playwright | OpenRouter.ai/claude-3.5-sonnet | FastAPI | React + TypeScript + Vite
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->
