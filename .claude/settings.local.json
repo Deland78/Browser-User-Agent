@@ -24,7 +24,16 @@
       "Bash(python -m pytest tests/unit/test_message.py::TestMessageService::test_create_message -v --tb=short)",
       "Bash(python -m pytest tests/unit/test_context.py -v --tb=short)",
       "Bash(python -m pytest tests/unit/ -v --tb=no --co -q)",
-      "Bash(python -m pytest tests/unit/ -v --tb=line)"
+      "Bash(python -m pytest tests/unit/ -v --tb=line)",
+      "Bash(python -m pytest tests/unit/test_command_parser.py -v --tb=short -x)",
+      "Bash(python -m pytest tests/unit/test_command_parser.py -v --tb=short)",
+      "Bash(python -m pytest tests/unit/test_llm_integration.py -v --tb=short -x)",
+      "Bash(python -m pytest tests/unit/test_llm_integration.py::TestLLMIntegration::test_parser_accepts_llm_client -v --tb=short)",
+      "Bash(python -m pytest tests/unit/test_llm_integration.py -v --tb=line)",
+      "Bash(python -m pytest tests/unit/test_llm_integration.py -v)",
+      "Bash(python -m pytest tests/unit/test_command_parser.py -v)",
+      "Bash(python -m pytest tests/unit/test_actions.py -v --tb=short)",
+      "Bash(python -m ruff check tests/unit/test_llm_integration.py)"
     ],
     "deny": [],
     "ask": []

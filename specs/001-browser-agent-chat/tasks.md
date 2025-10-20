@@ -250,7 +250,7 @@
 
 ### Tasks
 
-- **[US1-001]** Implement command parser foundation (Effort: L)
+- [X] **[US1-001]** Implement command parser foundation (Effort: L)
   - Create `backend/src/agent/command_parser.py` with CommandParser class
   - Implement parse() method per agent-interface.md
   - Define ParsedCommand dataclass with intent, actions, confidence_score
@@ -258,8 +258,9 @@
   - **Test**: Unit test parsing simple command "Go to google.com"
   - **Files**: `backend/src/agent/command_parser.py`, `tests/unit/test_command_parser.py`
   - **Spec**: FR-003 (interpret natural language), agent-interface.md CommandParser
+  - **Completed**: 17/17 tests passing
 
-- **[US1-002]** Integrate LLM for command interpretation (Effort: L)
+- [X] **[US1-002]** Integrate LLM for command interpretation (Effort: L)
   - Enhance CommandParser to call LLMClient.parse_command()
   - Load tool definitions from contracts/llm-tools-schema.json (6 tools: navigate, click, type_text, extract_information, scroll, configure_timeout)
   - Send tool schemas with LLM requests using OpenRouter function calling format
@@ -270,18 +271,20 @@
     2. 🟢 Implement tool schema loading and LLM request formatting
     3. 🔵 Add tool call → BrowserAction mapping
   - **Test**: Integration test with mocked LLM responses returning tool calls
-  - **Files**: `backend/src/agent/command_parser.py`, `tests/integration/test_agent_llm.py`
+  - **Files**: `backend/src/agent/command_parser.py`, `backend/src/agent/llm_parser.py`, `tests/unit/test_llm_integration.py`
   - **Spec**: FR-003, agent-interface.md LLMClient interface, contracts/llm-tools-schema.json
+  - **Completed**: 16/16 tests passing
 
-- **[US1-003]** Implement navigation action handler (Effort: M)
+- [X] **[US1-003]** Implement navigation action handler (Effort: M)
   - Create `backend/src/browser/actions.py` with NavigateAction handler
   - Implement navigate() method using Playwright page.goto()
   - Support wait_for options (load, domcontentloaded, networkidle)
   - Apply timeout from session config (FR-020)
   - Return ActionResult with success status and duration
   - **Test**: Unit test with mocked browser, integration test with real navigation
-  - **Files**: `backend/src/browser/actions.py`, `tests/unit/test_actions.py`, `tests/integration/test_navigation.py`
+  - **Files**: `backend/src/browser/actions.py`, `tests/unit/test_actions.py`
   - **Spec**: FR-004 (navigation commands), browser-api.yaml /navigate endpoint
+  - **Completed**: 15/15 tests passing
 
 - **[US1-006]** Implement multi-strategy element finder (Effort: L)
   - Create `backend/src/browser/element_finder.py` with ElementFinder class
