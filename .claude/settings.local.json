@@ -21,7 +21,10 @@
       "Bash(python -m pytest tests/unit/test_message.py -v --tb=short)",
       "Bash(python -m pytest tests/unit/test_message.py::TestChatMessage -v --tb=short)",
       "Bash(python -m pytest tests/unit/test_message.py::TestMessageService -v --tb=short -x)",
-      "Bash(python -m pytest tests/unit/test_message.py::TestMessageService::test_create_message -v --tb=short)"
+      "Bash(python -m pytest tests/unit/test_message.py::TestMessageService::test_create_message -v --tb=short)",
+      "Bash(python -m pytest tests/unit/test_context.py -v --tb=short)",
+      "Bash(python -m pytest tests/unit/ -v --tb=no --co -q)",
+      "Bash(python -m pytest tests/unit/ -v --tb=line)"
     ],
     "deny": [],
     "ask": []
