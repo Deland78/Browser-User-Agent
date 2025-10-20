@@ -6,13 +6,13 @@ build-backend = "setuptools.build_meta"
 name = "browser-agent-backend"
 version = "0.1.0"
 description = "FastAPI backend for the browser automation agent."
-readme = "../README.md"
 requires-python = ">=3.11"
 license = { text = "Proprietary" }
 dependencies = [
   "fastapi>=0.104,<1.0",
   "uvicorn[standard]>=0.23,<1.0",
   "pydantic>=2.4,<3.0",
+  "pydantic-settings>=2.0,<3.0",
   "httpx>=0.25,<1.0",
   "playwright>=1.40,<2.0",
   "sqlalchemy>=2.0,<3.0",

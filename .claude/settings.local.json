@@ -6,7 +6,14 @@
       "Bash(powershell.exe -ExecutionPolicy Bypass -File \".specify/scripts/powershell/check-prerequisites.ps1\" -Json -RequireTasks -IncludeTasks)",
       "Bash(powershell.exe -ExecutionPolicy Bypass -File \".specify/scripts/powershell/check-prerequisites.ps1\" -Json)",
       "Bash(xargs ls -la)",
-      "Bash(git rev-parse --git-dir)"
+      "Bash(git rev-parse --git-dir)",
+      "Bash(python -c \"import sys; print(f''Python {sys.version}'')\")",
+      "Bash(pip install -e .)",
+      "Bash(pytest tests/unit/test_driver.py -v --tb=short)",
+      "Bash(pytest tests/unit/ -v --tb=no --co -q)",
+      "Bash(pytest tests/unit/ --collect-only -q)",
+      "Bash(pytest tests/unit/ -v --tb=line)",
+      "Bash(pytest tests/unit/test_app.py -v)"
     ],
     "deny": [],
     "ask": []

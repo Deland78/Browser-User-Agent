@@ -16,7 +16,7 @@ This document defines the engineering contract for the Python-based AI Agent web
 ## 2. Development Workflow
 1. **Plan** features with explicit acceptance criteria, risk assessment, and UX considerations.
 2. **Design** by annotating architecture impacts, interfaces, and dependency boundaries before coding.
-3. **Test First** by writing failing unit or behavior tests (Red), implementing the feature (Green), and refactoring to project standards (Refactor).
+3. **Test First** following strict Test-Driven Development (TDD) as defined in Section 3.1 below. Write failing tests before any production code.
 4. **Implement** in small, reviewable increments with clear commit history.
 5. **Verify** through automated test suites, linting, type checks, and manual smoke testing of high-risk paths.
 6. **Review** using the checklist below; capture decisions in the PR description.
@@ -32,17 +32,88 @@ This document defines the engineering contract for the Python-based AI Agent web
 ---
 
 ## 3. Testing Strategy
-- **Methodology**: Practice TDD for new logic and BDD for user-facing behaviors using Given-When-Then language in specs and docstrings.
-- **Categories**: Maintain unit tests for pure logic, integration tests for module collaborations, end-to-end tests for chat-to-browser workflows, and regression/performance suites for critical paths.
-- **Coverage Targets**: Sustain ≥80% coverage overall, 100% coverage for automation control flows, and explicit tests for edge cases and failure handling.
-- **pytest Standards**: Use fixtures for shared setup, `@pytest.mark.parametrize` for scenario breadth, and mocks/fakes for external systems. Ensure tests are deterministic and isolated.
-- **Continuous Validation**: Run fast suites on each commit, full suites in CI on pull requests, and publish coverage/performance reports. Address flaky tests immediately.
+
+### 3.1 Test-Driven Development (TDD) - Mandatory
+
+**All new production code MUST follow the RED-GREEN-REFACTOR cycle:**
+
+**🔴 RED: Write failing test first**
+- Write test describing desired behavior before ANY production code
+- Run test and verify it FAILS with meaningful error
+- If test passes without implementation, you haven't written a new test
+
+**🟢 GREEN: Make test pass with minimal code**
+- Write simplest implementation to make test pass
+- No extra features, no premature optimization
+- Run test and verify it PASSES
+
+**🔵 REFACTOR: Improve while keeping tests green**
+- Clean up duplication, improve names, optimize
+- Run tests after each change to ensure they still pass
+
+**Example TDD Flow:**
+```python
+# 🔴 RED: Write test first
+def test_navigate_to_url():
+    service = BrowserService()
+    service.navigate("http://example.com")
+    assert service.current_url == "http://example.com"
+# Run: pytest → FAILS (BrowserService doesn't exist)
+
+# 🟢 GREEN: Minimal implementation
+class BrowserService:
+    def navigate(self, url: str):
+        self.current_url = url
+# Run: pytest → PASSES
+
+# 🔴 RED: Next test
+def test_navigate_calls_playwright():
+    mock_page = Mock()
+    service = BrowserService(page=mock_page)
+    service.navigate("http://example.com")
+    mock_page.goto.assert_called_once()
+# Run: pytest → FAILS
+
+# 🟢 GREEN: Real implementation
+class BrowserService:
+    def __init__(self, page=None):
+        self.page = page
+    def navigate(self, url: str):
+        self.page.goto(url)
+        self.current_url = url
+# Run: pytest → PASSES
+
+# 🔵 REFACTOR: Add type hints, error handling
+# Run: pytest → STILL PASSES
+```
+
+**TDD Verification (Required for Code Review):**
+- Git commits show test-before-code pattern
+- Tests existed and failed before implementation
+- Can reproduce RED phase from git history
+
+**TDD Violations = Automatic Rejection:**
+- Production code committed before tests
+- Tests written after implementation exists
+- No evidence of failing tests (RED phase)
+
+**Exceptions (must be marked):**
+- Legacy code coverage (tag: `@pytest.mark.legacy_coverage`)
+- Critical production hotfix (write failing test first, then fix)
+
+### 3.2 Test Categories and Standards
+- **Methodology**: Practice TDD for all new logic (Section 3.1) and BDD for user-facing behaviors using Given-When-Then language.
+- **Categories**: Unit tests for pure logic, integration tests for module collaborations, E2E tests for workflows, regression/performance suites for critical paths.
+- **Coverage Targets**: ≥80% overall, 100% for automation control flows. Explicit tests for edge cases and failure handling.
+- **pytest Standards**: Use fixtures for setup, `@pytest.mark.parametrize` for scenarios, mocks for external systems. Tests must be deterministic and isolated.
+- **Continuous Validation**: Fast suites on each commit, full suites in CI on PRs. Address flaky tests immediately.
 
 ```python
 def test_agent_navigates_to_website():
-    # Given the agent is initialized with a mocked browser driver
-    # When a user requests navigation to a URL
-    # Then the agent issues the correct browser command and surfaces status
+    # Given: agent initialized with mocked browser
+    # When: user requests navigation
+    # Then: correct browser command issued
+    assert result.status == "success"
 ```
 
 ---

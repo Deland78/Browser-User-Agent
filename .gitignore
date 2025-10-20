@@ -2,7 +2,9 @@
 .env
 .env.local
 .env.*.local
+*.env.bak
 **/.env
+**/.env.bak
 **/backend/.env
 **/frontend/.env
 
