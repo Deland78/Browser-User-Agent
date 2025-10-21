@@ -286,7 +286,7 @@
   - **Spec**: FR-004 (navigation commands), browser-api.yaml /navigate endpoint
   - **Completed**: 15/15 tests passing
 
-- **[US1-006]** Implement multi-strategy element finder (Effort: L)
+- [X] **[US1-006]** Implement multi-strategy element finder (Effort: L)
   - Create `backend/src/browser/element_finder.py` with ElementFinder class
   - Implement find_elements() method with strategies: selector, text, aria_label, role
   - Use Playwright locators (get_by_text, get_by_label, get_by_role, locator)
@@ -301,15 +301,17 @@
   - **Test**: Unit test for each strategy, integration test on real HTML page
   - **Files**: `backend/src/browser/element_finder.py`, `tests/unit/test_element_finder.py`
   - **Spec**: FR-010 (multi-strategy identification), browser-api.yaml /elements endpoint
+  - **Completed**: 13/13 tests passing
 
-- **[US1-004]** Implement click action handler (Effort: M)
+- [X] **[US1-004]** Implement click action handler (Effort: M)
   - Add ClickAction handler to `actions.py`
   - Use ElementFinder (from US1-006) to locate target element
   - Implement click() using Playwright locator.click()
   - Handle click failures (element not found, not clickable)
   - **Test**: Unit test with mocked elements, integration test clicking real button
-  - **Files**: `backend/src/browser/actions.py`, `tests/unit/test_actions.py`, `tests/integration/test_click.py`
+  - **Files**: `backend/src/browser/actions.py`, `tests/unit/test_actions.py`
   - **Spec**: FR-005 (click interaction), browser-api.yaml /click endpoint
+  - **Completed**: 2/2 tests passing (execute_click_with_finder)
 
 - **[US1-005]** Implement type action handler (Effort: M)
   - Add TypeAction handler to `actions.py`

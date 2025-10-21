@@ -33,7 +33,14 @@
       "Bash(python -m pytest tests/unit/test_llm_integration.py -v)",
       "Bash(python -m pytest tests/unit/test_command_parser.py -v)",
       "Bash(python -m pytest tests/unit/test_actions.py -v --tb=short)",
-      "Bash(python -m ruff check tests/unit/test_llm_integration.py)"
+      "Bash(python -m ruff check tests/unit/test_llm_integration.py)",
+      "Bash(python -m pytest tests/unit/test_element_finder.py -v --tb=short)",
+      "Bash(python -m pytest tests/unit/test_element_finder.py::TestElementFinderTextStrategy::test_find_by_text_single_match -v --tb=short)",
+      "Bash(python -m pytest tests/unit/test_element_finder.py -v --tb=line)",
+      "Bash(python -m pytest tests/unit/test_element_finder.py -v -k \"text\" --tb=no)",
+      "Bash(python -m pytest tests/unit/test_element_finder.py -v --tb=no)",
+      "Bash(python -m pytest tests/unit/ -v --tb=no)",
+      "Bash(python -m pytest tests/unit/test_actions.py::TestClickActionHandler -v --tb=short)"
     ],
     "deny": [],
     "ask": []

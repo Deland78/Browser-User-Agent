@@ -120,34 +120,31 @@ Users need the agent to proactively ask for clarification when it's uncertain ho
 ### Functional Requirements
 
 - **FR-001**: System MUST provide a chat interface where users can enter text commands in natural language
-- **FR-002**: System MUST display agent responses in the same chat interface within 3 seconds of command completion
+- **FR-002**: System MUST display agent responses in the same chat interface within 3 seconds for simple actions and within 10 seconds for complex multi-step tasks
 - **FR-003**: Agent MUST interpret natural language commands and translate them into browser actions (navigate, click, type, extract data)
 - **FR-004**: Agent MUST execute browser navigation commands (go to URL, refresh, go back, go forward)
 - **FR-005**: Agent MUST execute browser interaction commands (click elements, type text, submit forms, scroll)
-- **FR-006**: Agent MUST extract information from web pages based on user questions and present results clearly in the chat window
-- **FR-006a**: Agent MUST interpret information-seeking questions from users (e.g., "What is...", "Find...", "How many...", "List...")
-- **FR-006b**: Agent MUST support multiple extraction types: text content, element counts, lists, and element attributes (href, src)
+- **FR-006**: Agent MUST extract information from web pages based on user questions (e.g., "What is...", "Find...", "How many...", "List...") and present results clearly in the chat window. Agent MUST support multiple extraction types: text content, element counts, lists, and element attributes (href, src)
 - **FR-007**: System MUST maintain conversation history within a session showing all user prompts and agent responses
 - **FR-008**: Agent MUST report successful completion of commands with confirmation messages
-- **FR-009**: Agent MUST report failures with clear error messages explaining what went wrong
-- **FR-009a**: Agent MUST inform users when requested information cannot be found on the page and suggest alternative approaches
+- **FR-009**: Agent MUST report failures with clear error messages explaining what went wrong, including when requested information cannot be found on the page, and suggest alternative approaches
 - **FR-010**: Agent MUST identify elements on the page using multiple strategies (text content, labels, position, element type)
 - **FR-011**: Agent MUST handle multi-step commands by breaking them into sequential actions
 - **FR-012**: Agent MUST provide progress updates for multi-step tasks
 - **FR-013**: System MUST allow users to stop/cancel ongoing commands through both a dedicated cancel button in the chat UI and by typing "stop" or "cancel" commands in the chat
 - **FR-014**: Agent MUST evaluate confidence level for executing user instructions using a 0-100% scale
-- **FR-014a**: Agent MUST ask for clarification when confidence is less than 90% before attempting to execute the command
-- **FR-014b**: Agent MUST provide specific feedback about why confidence is low (e.g., multiple matching elements, unclear intent, missing information)
-- **FR-014c**: Agent MUST re-evaluate confidence after receiving user's clarifying response and proceed only if confidence reaches or exceeds 90%
-- **FR-014d**: Agent MUST continue asking clarifying questions until confidence exceeds 90% threshold or determine that the task cannot be completed
-- **FR-015**: System MUST support basic browser state awareness (current URL, page title, visible elements)
-- **FR-016**: Agent MUST handle standard web elements (buttons, links, input fields, dropdowns, checkboxes)
-- **FR-017**: System MUST preserve conversation history for the duration of the session
-- **FR-018**: Chat interface MUST support scrolling to view previous conversation history
-- **FR-019**: Agent MUST format responses clearly distinguishing between actions taken and information returned
-- **FR-020**: System MUST abort navigation and browser actions that exceed the timeout threshold (default: 20 seconds), report the timeout error to the user with the exceeded duration, and provide retry suggestions (e.g., "Try increasing timeout with /timeout 60")
-- **FR-021**: System MUST allow users to configure the page load timeout using a slash command (e.g., "/timeout 60" to set 60-second timeout)
-- **FR-022**: System MUST reset the timeout configuration to the 20-second default when the application restarts
+- **FR-015**: Agent MUST ask for clarification when confidence is less than 90% before attempting to execute the command
+- **FR-016**: Agent MUST provide specific feedback about why confidence is low (e.g., multiple matching elements, unclear intent, missing information)
+- **FR-017**: Agent MUST re-evaluate confidence after receiving user's clarifying response and proceed only if confidence reaches or exceeds 90%
+- **FR-018**: Agent MUST continue asking clarifying questions until confidence exceeds 90% threshold or determine that the task cannot be completed
+- **FR-019**: System MUST support basic browser state awareness (current URL, page title, visible elements)
+- **FR-020**: Agent MUST handle standard web elements (buttons, links, input fields, dropdowns, checkboxes)
+- **FR-021**: System MUST preserve conversation history for the duration of the session
+- **FR-022**: Chat interface MUST support scrolling to view previous conversation history
+- **FR-023**: Agent MUST format responses clearly distinguishing between actions taken and information returned
+- **FR-024**: System MUST abort navigation and browser actions that exceed the timeout threshold (default: 20 seconds), report the timeout error to the user with the exceeded duration, and provide retry suggestions (e.g., "Try increasing timeout with /timeout 60")
+- **FR-025**: System MUST allow users to configure the page load timeout using a slash command (e.g., "/timeout 60" to set 60-second timeout)
+- **FR-026**: System MUST reset the timeout configuration to the 20-second default when the application restarts
 
 ### Key Entities
 

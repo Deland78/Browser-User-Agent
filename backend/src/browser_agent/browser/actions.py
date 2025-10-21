@@ -255,6 +255,100 @@ async def execute_click(
         )
 
 
+async def execute_click_with_finder(
+    action: ClickAction,
+    page: Any,  # Playwright Page
+    session_id: str,
+    context_service: ContextService,
+    element_finder: Any,  # ElementFinder instance
+    timeout_seconds: int = 20,
+) -> Dict[str, Any]:
+    """Execute click action using ElementFinder for element location.
+
+    Args:
+        action: ClickAction with element description and search criteria
+        page: Playwright page instance
+        session_id: Current session ID
+        context_service: Service for updating BrowserContext
+        element_finder: ElementFinder instance for multi-strategy element location
+        timeout_seconds: Action timeout in seconds
+
+    Returns:
+        ActionResult dictionary
+
+    Per US1-004: Integrates ElementFinder from US1-006 for robust element location.
+    """
+    from browser_agent.browser.element_finder import FindStrategy
+
+    logger.info(f"Executing click with finder: {action.element_description} (session: {session_id})")
+
+    timeout_ms = timeout_seconds * 1000
+
+    try:
+        # Use ElementFinder to locate elements
+        strategy = FindStrategy.SELECTOR if action.selector else FindStrategy.COMBINED
+
+        if action.selector:
+            elements = await element_finder.find_elements(
+                strategy=strategy,
+                value=action.selector
+            )
+        elif action.text:
+            elements = await element_finder.find_elements(
+                strategy=FindStrategy.TEXT,
+                value=action.text,
+                exact=True
+            )
+        else:
+            raise ValueError("ClickAction must specify either selector or text")
+
+        if not elements:
+            error_msg = f"Element not found: {action.element_description}"
+            logger.warning(error_msg)
+            return create_action_result(
+                action_type="click",
+                status="error",
+                result_data={"element_description": action.element_description},
+                error_message=error_msg
+            )
+
+        # Click first matching element
+        if action.selector:
+            locator = page.locator(action.selector)
+        elif action.text:
+            locator = page.get_by_text(action.text, exact=True)
+
+        await locator.click(timeout=timeout_ms)
+
+        logger.info(f"Click successful: {action.element_description}")
+
+        return create_action_result(
+            action_type="click",
+            status="success",
+            result_data={
+                "element_description": action.element_description,
+                "elements_found": len(elements),
+                "clicked_element": elements[0]
+            },
+            error_message=None
+        )
+
+    except Exception as e:
+        error_type = type(e).__name__
+        error_message = str(e)
+        logger.error(f"Click failed: {error_type} - {error_message}")
+
+        if "timeout" in error_type.lower() or "timeout" in error_message.lower():
+            error_message = f"Click timeout after {timeout_seconds}s: {error_message}"
+
+        return create_action_result(
+            action_type="click",
+            status="error",
+            result_data={"element_description": action.element_description, "error_type": error_type},
+            error_message=error_message
+        )
+
+
 # ============================================================================
 # Type Action Handler
 # Per tasks.md US1-005

@@ -452,3 +452,54 @@ class TestNavigateIntegrationWithContext:
 
         # Verify result
         assert result["status"] == "success"
+
+
+# ============================================================================
+# Click Action Handler Tests (US1-004)
+# ============================================================================
+
+
+class TestClickActionHandler:
+    """Test click action execution with ElementFinder integration."""
+
+    @pytest.fixture
+    def mock_page(self):
+        page = MagicMock()
+        return page
+
+    @pytest.fixture
+    def mock_context_service(self):
+        service = AsyncMock()
+        return service
+
+    @pytest.fixture
+    def mock_element_finder(self):
+        from browser_agent.browser.element_finder import ElementFinder
+        finder = AsyncMock(spec=ElementFinder)
+        return finder
+
+    @pytest.mark.asyncio
+    async def test_click_by_text_success(self, mock_page, mock_context_service, mock_element_finder):
+        from browser_agent.browser.actions import execute_click_with_finder
+
+        mock_element_finder.find_elements = AsyncMock(return_value=[{"tag_name": "button", "text": "Login"}])
+        mock_locator = MagicMock()
+        mock_locator.click = AsyncMock()
+        mock_page.get_by_text.return_value = mock_locator
+
+        action = ClickAction(element_description="Login button", text="Login")
+        result = await execute_click_with_finder(action, mock_page, "s-1", mock_context_service, mock_element_finder)
+
+        assert result["status"] == "success"
+        mock_locator.click.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_click_element_not_found(self, mock_page, mock_context_service, mock_element_finder):
+        from browser_agent.browser.actions import execute_click_with_finder
+
+        mock_element_finder.find_elements = AsyncMock(return_value=[])
+        action = ClickAction(element_description="Missing button", text="NotFound")
+        result = await execute_click_with_finder(action, mock_page, "s-1", mock_context_service, mock_element_finder)
+
+        assert result["status"] == "error"
+        assert "not found" in result["error_message"].lower()
