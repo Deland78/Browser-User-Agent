@@ -65,13 +65,12 @@ class Settings(BaseSettings):
     # API Configuration
     api_host: str = Field(default="0.0.0.0")
     api_port: int = Field(default=8000, ge=1024, le=65535)
-    cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:5173", "http://127.0.0.1:5173"])
+    cors_origins: str | list[str] = Field(default="http://localhost:5173,http://127.0.0.1:5173")
 
     @field_validator("cors_origins", mode="before")
     @classmethod
     def parse_cors_origins(cls, v) -> list[str]:
         """Parse CORS origins from JSON arrays or comma-separated/plain strings."""
-
         return parse_cors(v)
 
     @field_validator("openrouter_api_key")
@@ -91,7 +90,7 @@ class Settings(BaseSettings):
         return v
 
     model_config = SettingsConfigDict(
-        env_file="backend/.env",
+        env_file=".env",
         env_file_encoding="utf-8",
         case_sensitive=False,
         extra="ignore",

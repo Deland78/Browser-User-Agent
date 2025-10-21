@@ -69,7 +69,6 @@ async def parse_with_llm(
         response = await llm_client.chat_completion(
             messages=messages,
             tools=tool_schemas if tool_schemas else None,
-            model="anthropic/claude-3.5-sonnet",
         )
     except LLMTimeoutError as e:
         raise ParsingError(f"LLM request timed out: {str(e)}")
