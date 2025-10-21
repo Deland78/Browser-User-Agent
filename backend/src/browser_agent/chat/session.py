@@ -81,6 +81,10 @@ class ChatSession:
             raise ValueError("last_activity_at must be >= created_at")
 
 
+# Shared in-memory session store (singleton pattern)
+_SESSION_STORE: dict[str, ChatSession] = {}
+
+
 class SessionService:
     """In-memory session store with CRUD operations.
 
@@ -91,11 +95,14 @@ class SessionService:
 
     Thread-safety: Not thread-safe (single-threaded MVP)
     Persistence: Ephemeral (per spec Assumptions - not persisted across restarts)
+
+    Note: Uses shared module-level _SESSION_STORE for persistence across instances
     """
 
     def __init__(self):
-        """Initialize in-memory session store."""
-        self._sessions: dict[str, ChatSession] = {}
+        """Initialize session service with shared store."""
+        # Use shared module-level store instead of instance-level
+        self._sessions = _SESSION_STORE
 
     def create_session(
         self, timeout_seconds: int = 20, browser_instance_id: Optional[str] = None
