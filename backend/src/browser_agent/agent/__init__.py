@@ -13,6 +13,12 @@ from browser_agent.agent.command_parser import (
     ConfigureAction,
     ParsingError,
 )
+from browser_agent.agent.executor import (
+    CommandExecutor,
+    ExecutionResult,
+    ExecutionError,
+    ProgressUpdate,
+)
 
 __all__ = [
     "CommandParser",
@@ -26,4 +32,8 @@ __all__ = [
     "ScrollAction",
     "ConfigureAction",
     "ParsingError",
+    "CommandExecutor",
+    "ExecutionResult",
+    "ExecutionError",
+    "ProgressUpdate",
 ]
