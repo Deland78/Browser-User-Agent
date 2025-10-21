@@ -12,6 +12,7 @@ from browser_agent.browser.actions import (
     execute_click,
     execute_click_with_finder,
     execute_type,
+    execute_type_with_finder,
     create_action_result,
 )
 from browser_agent.browser.element_finder import (
@@ -29,6 +30,7 @@ __all__ = [
     "execute_click",
     "execute_click_with_finder",
     "execute_type",
+    "execute_type_with_finder",
     "create_action_result",
     "ElementFinder",
     "FindStrategy",

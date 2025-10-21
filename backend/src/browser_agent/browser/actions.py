@@ -433,3 +433,113 @@ async def execute_type(
             },
             error_message=error_message,
         )
+
+
+async def execute_type_with_finder(
+    action: TypeAction,
+    page: Any,  # Playwright Page
+    session_id: str,
+    context_service: ContextService,
+    element_finder: Any,  # ElementFinder instance
+    timeout_seconds: int = 20,
+) -> Dict[str, Any]:
+    """Execute type action using ElementFinder for element location.
+
+    Args:
+        action: TypeAction with element description, text, and options
+        page: Playwright page instance
+        session_id: Current session ID
+        context_service: Service for updating BrowserContext
+        element_finder: ElementFinder instance for multi-strategy element location
+        timeout_seconds: Action timeout in seconds
+
+    Returns:
+        ActionResult dictionary
+
+    Per US1-005: Integrates ElementFinder from US1-006 for robust element location.
+    Supports clear_first and press_enter options per browser-api.yaml.
+    """
+    from browser_agent.browser.element_finder import FindStrategy
+
+    logger.info(f"Executing type with finder: '{action.text}' into {action.element_description} (session: {session_id})")
+
+    timeout_ms = timeout_seconds * 1000
+
+    try:
+        # Use ElementFinder to locate elements
+        strategy = FindStrategy.SELECTOR if action.selector else FindStrategy.COMBINED
+
+        if action.selector:
+            elements = await element_finder.find_elements(
+                strategy=strategy,
+                value=action.selector
+            )
+        else:
+            # Try to find input by element description (text/label)
+            elements = await element_finder.find_elements(
+                strategy=FindStrategy.LABEL,
+                value=action.element_description
+            )
+
+        if not elements:
+            error_msg = f"Element not found: {action.element_description}"
+            logger.warning(error_msg)
+            return create_action_result(
+                action_type="type",
+                status="error",
+                result_data={"element_description": action.element_description},
+                error_message=error_msg
+            )
+
+        # Get locator for the element
+        if action.selector:
+            locator = page.locator(action.selector)
+        else:
+            # Use first element found
+            locator = page.locator(action.element_description)
+
+        # Type text based on clear_first option
+        if action.clear_first:
+            # fill() clears the field first, then types
+            await locator.fill(action.text, timeout=timeout_ms)
+        else:
+            # type() appends to existing text
+            await locator.type(action.text, timeout=timeout_ms)
+
+        # Press Enter if requested
+        if action.press_enter:
+            await locator.press("Enter", timeout=timeout_ms)
+
+        logger.info(f"Type successful: {action.element_description}")
+
+        return create_action_result(
+            action_type="type",
+            status="success",
+            result_data={
+                "element_description": action.element_description,
+                "elements_found": len(elements),
+                "text": action.text,
+                "clear_first": action.clear_first,
+                "press_enter": action.press_enter,
+            },
+            error_message=None
+        )
+
+    except Exception as e:
+        error_type = type(e).__name__
+        error_message = str(e)
+        logger.error(f"Type failed: {error_type} - {error_message}")
+
+        if "timeout" in error_type.lower() or "timeout" in error_message.lower():
+            error_message = f"Type timeout after {timeout_seconds}s: {error_message}"
+
+        return create_action_result(
+            action_type="type",
+            status="error",
+            result_data={
+                "element_description": action.element_description,
+                "text": action.text,
+                "error_type": error_type
+            },
+            error_message=error_message
+        )

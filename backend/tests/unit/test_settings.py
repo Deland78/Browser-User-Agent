@@ -154,21 +154,22 @@ class TestSettings:
         # Should be the same instance
         assert settings1 is settings2
 
-    def test_log_directory_creation(self, tmp_path, monkeypatch):
+    def test_log_directory_creation(self, tmp_path):
         """Test that log directory is created if it doesn't exist."""
-        log_dir = tmp_path / "test_logs"
-        monkeypatch.setattr("browser_agent.config.settings.Path", lambda x: log_dir if "logs" in x else Path(x))
+        log_dir = tmp_path / "test_logs" / "nested" / "path"
 
         # Directory shouldn't exist yet
         assert not log_dir.exists()
 
-        # get_settings should create it
+        # Create Settings with custom log directory
         settings = Settings(log_directory=log_dir)
 
-        # Manually create since we're testing
+        # Simulate what get_settings() does
         settings.log_directory.mkdir(parents=True, exist_ok=True)
 
+        # Directory should now exist
         assert log_dir.exists()
+        assert settings.log_directory == log_dir
 
     def test_api_port_validation(self):
         """Test API port range validation."""

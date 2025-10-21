@@ -41,7 +41,15 @@
       "Bash(python -m pytest tests/unit/test_element_finder.py -v --tb=no)",
       "Bash(python -m pytest tests/unit/ -v --tb=no)",
       "Bash(python -m pytest tests/unit/test_actions.py::TestClickActionHandler -v --tb=short)",
-      "Bash(python test_manual_integration.py)"
+      "Bash(python test_manual_integration.py)",
+      "Bash(dir /s /b)",
+      "Bash(findstr /i constitution)",
+      "Bash(python -m pytest tests/unit/test_actions.py::TestTypeActionHandler -v --tb=short)",
+      "Bash(python -m pytest tests/unit/test_actions.py::TestTypeActionHandler -v --tb=no)",
+      "Bash(python -m pytest tests/unit/ -v --tb=no -q)",
+      "Bash(python -m pytest tests/unit/test_actions.py -v --tb=no)",
+      "Bash(python -m pytest tests/unit/test_settings.py::TestSettings::test_log_directory_creation -v --tb=short)",
+      "Bash(python -m pytest tests/unit/test_settings.py::TestSettings::test_log_directory_creation -v)"
     ],
     "deny": [],
     "ask": []

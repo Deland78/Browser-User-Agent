@@ -503,3 +503,173 @@ class TestClickActionHandler:
 
         assert result["status"] == "error"
         assert "not found" in result["error_message"].lower()
+
+
+# ============================================================================
+# Type Action Handler Tests (US1-005)
+# ============================================================================
+
+
+class TestTypeActionHandler:
+    """Test type action execution with ElementFinder integration.
+
+    Per US1-005: Implement type action handler using ElementFinder for element location.
+    Supports clear_first and press_enter options per browser-api.yaml.
+    """
+
+    @pytest.fixture
+    def mock_page(self):
+        page = MagicMock()
+        return page
+
+    @pytest.fixture
+    def mock_context_service(self):
+        service = AsyncMock()
+        return service
+
+    @pytest.fixture
+    def mock_element_finder(self):
+        from browser_agent.browser.element_finder import ElementFinder
+        finder = AsyncMock(spec=ElementFinder)
+        return finder
+
+    @pytest.mark.asyncio
+    async def test_type_basic_success(self, mock_page, mock_context_service, mock_element_finder):
+        """Test typing text into an input field."""
+        from browser_agent.browser.actions import execute_type_with_finder
+        from browser_agent.agent.command_parser import TypeAction
+
+        # Mock ElementFinder to return input element
+        mock_element_finder.find_elements = AsyncMock(
+            return_value=[{"tag_name": "input", "type": "text", "name": "username"}]
+        )
+
+        # Mock Playwright locator
+        mock_locator = MagicMock()
+        mock_locator.fill = AsyncMock()
+        mock_page.locator.return_value = mock_locator
+
+        action = TypeAction(
+            element_description="username field",
+            text="john.doe@example.com",
+            selector="#username",
+            clear_first=True,
+            press_enter=False
+        )
+
+        result = await execute_type_with_finder(
+            action, mock_page, "s-1", mock_context_service, mock_element_finder
+        )
+
+        assert result["status"] == "success"
+        mock_locator.fill.assert_called_once_with("john.doe@example.com", timeout=20000)
+
+    @pytest.mark.asyncio
+    async def test_type_with_press_enter(self, mock_page, mock_context_service, mock_element_finder):
+        """Test typing text and pressing enter."""
+        from browser_agent.browser.actions import execute_type_with_finder
+        from browser_agent.agent.command_parser import TypeAction
+
+        mock_element_finder.find_elements = AsyncMock(
+            return_value=[{"tag_name": "input", "type": "search"}]
+        )
+
+        mock_locator = MagicMock()
+        mock_locator.fill = AsyncMock()
+        mock_locator.press = AsyncMock()
+        mock_page.locator.return_value = mock_locator
+
+        action = TypeAction(
+            element_description="search box",
+            text="playwright documentation",
+            selector="input[type='search']",
+            clear_first=True,
+            press_enter=True
+        )
+
+        result = await execute_type_with_finder(
+            action, mock_page, "s-1", mock_context_service, mock_element_finder
+        )
+
+        assert result["status"] == "success"
+        mock_locator.fill.assert_called_once_with("playwright documentation", timeout=20000)
+        mock_locator.press.assert_called_once_with("Enter", timeout=20000)
+
+    @pytest.mark.asyncio
+    async def test_type_without_clear_first(self, mock_page, mock_context_service, mock_element_finder):
+        """Test typing text without clearing field first (append mode)."""
+        from browser_agent.browser.actions import execute_type_with_finder
+        from browser_agent.agent.command_parser import TypeAction
+
+        mock_element_finder.find_elements = AsyncMock(
+            return_value=[{"tag_name": "textarea"}]
+        )
+
+        mock_locator = MagicMock()
+        mock_locator.type = AsyncMock()
+        mock_page.locator.return_value = mock_locator
+
+        action = TypeAction(
+            element_description="comment field",
+            text="Additional comment",
+            selector="textarea#comment",
+            clear_first=False,
+            press_enter=False
+        )
+
+        result = await execute_type_with_finder(
+            action, mock_page, "s-1", mock_context_service, mock_element_finder
+        )
+
+        assert result["status"] == "success"
+        # When clear_first=False, should use type() not fill()
+        mock_locator.type.assert_called_once_with("Additional comment", timeout=20000)
+
+    @pytest.mark.asyncio
+    async def test_type_element_not_found(self, mock_page, mock_context_service, mock_element_finder):
+        """Test typing when element cannot be found."""
+        from browser_agent.browser.actions import execute_type_with_finder
+        from browser_agent.agent.command_parser import TypeAction
+
+        mock_element_finder.find_elements = AsyncMock(return_value=[])
+
+        action = TypeAction(
+            element_description="missing input",
+            text="some text",
+            selector="#nonexistent"
+        )
+
+        result = await execute_type_with_finder(
+            action, mock_page, "s-1", mock_context_service, mock_element_finder
+        )
+
+        assert result["status"] == "error"
+        assert "not found" in result["error_message"].lower()
+
+    @pytest.mark.asyncio
+    async def test_type_timeout_error(self, mock_page, mock_context_service, mock_element_finder):
+        """Test typing when operation times out."""
+        from browser_agent.browser.actions import execute_type_with_finder
+        from browser_agent.agent.command_parser import TypeAction
+
+        mock_element_finder.find_elements = AsyncMock(
+            return_value=[{"tag_name": "input"}]
+        )
+
+        mock_locator = MagicMock()
+        mock_locator.fill = AsyncMock(side_effect=TimeoutError("Timeout waiting for element"))
+        mock_page.locator.return_value = mock_locator
+
+        action = TypeAction(
+            element_description="slow input",
+            text="test",
+            selector="#slow"
+        )
+
+        result = await execute_type_with_finder(
+            action, mock_page, "s-1", mock_context_service, mock_element_finder, timeout_seconds=5
+        )
+
+        assert result["status"] == "error"
+        assert "timeout" in result["error_message"].lower()
+        assert "5s" in result["error_message"]
