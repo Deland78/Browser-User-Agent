@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { nanoid } from "nanoid";
 import { useEnvironment } from "../../hooks/useEnvironment";
 import type { ChatMessage } from "../../types/chat";
@@ -60,21 +60,13 @@ export function ChatShell() {
     [setMessages],
   );
 
-  const summary = useMemo(
-    () => ({
-      totalMessages: messages.length,
-      lastSender: messages[messages.length - 1]?.sender ?? "system",
-    }),
-    [messages],
-  );
-
   return (
     <section className={styles.chatShell} aria-label="Browser automation chat">
       <div className={styles.environmentBanner}>
         <span>Mode: {environment.environment}</span>
         <span>API: {environment.apiUrl}</span>
       </div>
-      <MessageList messages={messages} isProcessing={isProcessing} summary={summary} />
+      <MessageList messages={messages} isProcessing={isProcessing} />
       <MessageComposer onSend={handleSend} disabled={isProcessing} />
     </section>
   );

@@ -1,0 +1,74 @@
+/**
+ * ChatWindow styles
+ * Per FR-001: Chat interface layout
+ * Per FR-018: Scrollable message history
+ */
+
+.chatWindow {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Environment banner for development mode */
+.environmentBanner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background-color: #fff3cd;
+  border-bottom: 1px solid #ffecb5;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #856404;
+  flex-shrink: 0;
+}
+
+.environmentBanner span {
+  padding: 0 0.5rem;
+}
+
+/* Responsive layout */
+@media (max-width: 768px) {
+  .chatWindow {
+    height: 100vh;
+    max-width: 100%;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .environmentBanner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .chatWindow {
+    border: 2px solid #000;
+  }
+
+  .environmentBanner {
+    border-bottom-width: 2px;
+  }
+}
+
+/* Dark mode support (future enhancement) */
+@media (prefers-color-scheme: dark) {
+  .chatWindow {
+    background-color: #1a1a1a;
+    color: #ffffff;
+  }
+
+  .environmentBanner {
+    background-color: #2d2d2d;
+    border-bottom-color: #404040;
+    color: #ffd700;
+  }
+}

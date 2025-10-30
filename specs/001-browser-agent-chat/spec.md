@@ -109,7 +109,7 @@ Users need the agent to proactively ask for clarification when it's uncertain ho
 - What happens when user asks for information that doesn't exist on the current page?
 - How does the agent handle requests for information that exists but is hidden or in collapsed sections?
 - How does the system behave when browser permissions (popups, notifications) interrupt automation?
-- What happens if the user provides a command for an action that requires scrolling to find the element?
+- What happens if the user provides a command for an action that requires scrolling to find the element? (MVP: elements must be visible without scrolling; scroll support deferred)
 - How does the agent handle authentication popups or CAPTCHA challenges?
 - What happens when the agent's confidence hovers around the 90% threshold (e.g., 89% vs 91%)?
 - How does the system handle repeated clarification cycles where confidence never reaches 90%?
@@ -123,7 +123,7 @@ Users need the agent to proactively ask for clarification when it's uncertain ho
 - **FR-002**: System MUST display agent responses in the same chat interface within 3 seconds for simple actions and within 10 seconds for complex multi-step tasks
 - **FR-003**: Agent MUST interpret natural language commands and translate them into browser actions (navigate, click, type, extract data)
 - **FR-004**: Agent MUST execute browser navigation commands (go to URL, refresh, go back, go forward)
-- **FR-005**: Agent MUST execute browser interaction commands (click elements, type text, submit forms, scroll)
+- **FR-005**: Agent MUST execute browser interaction commands (click elements, type text, submit forms)
 - **FR-006**: Agent MUST extract information from web pages based on user questions (e.g., "What is...", "Find...", "How many...", "List...") and present results clearly in the chat window. Agent MUST support multiple extraction types: text content, element counts, lists, and element attributes (href, src)
 - **FR-007**: System MUST maintain conversation history within a session showing all user prompts and agent responses
 - **FR-008**: Agent MUST report successful completion of commands with confirmation messages
@@ -209,3 +209,4 @@ Users need the agent to proactively ask for clarification when it's uncertain ho
 - Handling of CAPTCHA challenges
 - File uploads or downloads
 - Browser developer tools integration
+- Scroll actions (planned for future enhancement after MVP)

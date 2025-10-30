@@ -110,7 +110,7 @@ This document defines the core data entities and their relationships for the bro
 **Fields**:
 - `action_id`: string (UUID) - Unique identifier
 - `message_id`: string (foreign key) - Command message that triggered this action
-- `action_type`: enum - [navigate, click, type, scroll, extract, wait, back, forward, refresh]
+- `action_type`: enum - [navigate, click, type, extract, wait, back, forward, refresh]
 - `target`: JSON - Element identifier or URL
   - For navigate: `{"url": "https://example.com"}`
   - For click: `{"selector": "button", "text": "Login", "strategy": "text"}`

@@ -363,15 +363,29 @@
   - **Singleton Fix**: Fixed SessionService to use shared module-level store
   - **Note**: CommandParser/CommandExecutor integration deferred to next iteration (US3-001)
 
-- **[US1-009]** Build basic chat UI components (Effort: L)
-  - Create `frontend/src/components/ChatWindow.tsx` container
-  - Create `MessageList.tsx` to display message history
-  - Create `MessageInput.tsx` for user input with send button
-  - Create `MessageBubble.tsx` for individual message rendering
-  - Style with Radix UI components (research.md Decision 6)
-  - **Test**: Component tests with React Testing Library
-  - **Files**: `frontend/src/components/*.tsx`, `tests/components/ChatWindow.test.tsx`
+- [X] **[US1-009]** Build basic chat UI components (Effort: L) **✅ COMPLETED**
+  - Create `frontend/src/components/ChatWindow.tsx` container ✓
+  - Create `MessageList.tsx` to display message history ✓
+  - Create `MessageInput.tsx` for user input with send button ✓
+  - Create `MessageBubble.tsx` for individual message rendering ✓
+  - Style with Radix UI components (research.md Decision 6) ✓
+  - **Test**: Component tests with React Testing Library (deferred to US1-011)
+  - **Files**: `frontend/src/components/chat/*.tsx`
   - **Spec**: FR-001 (chat interface), FR-018 (scrolling)
+  - **Completed**: 4 React components created with TypeScript + CSS modules
+  - **Components Created**:
+    - ChatWindow.tsx - Main container with state management (94 lines)
+    - MessageList.tsx - Message history display with auto-scroll (77 lines)
+    - MessageInput.tsx - User input form with Enter-to-send (128 lines)
+    - MessageBubble.tsx - Individual message rendering with status indicators (98 lines)
+  - **Accessibility**: ARIA live regions, keyboard navigation, screen reader support
+  - **Styling**: Radix UI icons, responsive CSS, dark mode support, reduced motion
+  - **Note**: Using placeholder backend integration until US1-010/US1-011
+  - **Build Validation Fixes (2025-10-22)**:
+    - Added `/// <reference types="vitest" />` to vite.config.ts to resolve test config type errors
+    - Updated `moduleResolution` from "Node" → "bundler" in both tsconfig.json and tsconfig.node.json
+    - Fixed TypeScript compilation errors blocking `npm run build`
+    - ✅ Verified: Full build passes successfully (tsc -b && vite build)
 
 - **[US1-010]** Implement chat API client service (Effort: M)
   - Create `frontend/src/services/chatApi.ts` with API client

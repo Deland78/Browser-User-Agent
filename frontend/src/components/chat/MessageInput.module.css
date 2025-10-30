@@ -1,0 +1,259 @@
+/**
+ * MessageInput styles
+ * Per Decision 6: Accessible forms with clear focus states
+ */
+
+.messageInput {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: #ffffff;
+  border-top: 1px solid #e0e0e0;
+  flex-shrink: 0;
+}
+
+.inputContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.25rem;
+}
+
+.textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-family: inherit;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  resize: vertical;
+  min-height: 60px;
+  max-height: 150px;
+  transition: border-color 0.2s ease;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: #0066cc;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+.textarea:disabled {
+  background-color: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.textarea::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+.helpText {
+  font-size: 0.75rem;
+  color: #666;
+  font-style: italic;
+}
+
+.controls {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.clearButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  background-color: white;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clearButton:hover {
+  background-color: #f5f5f5;
+  color: #333;
+  border-color: #999;
+}
+
+.clearButton:focus-visible {
+  outline: 2px solid #0066cc;
+  outline-offset: 2px;
+}
+
+.sendButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: #0066cc;
+  color: white;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sendButton:hover:not(:disabled) {
+  background-color: #0052a3;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);
+}
+
+.sendButton:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(0, 102, 204, 0.3);
+}
+
+.sendButton:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.sendButton:focus-visible {
+  outline: 2px solid #0066cc;
+  outline-offset: 2px;
+}
+
+.sendButton svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Loading spinner */
+.spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .messageInput {
+    background-color: #1a1a1a;
+    border-top-color: #404040;
+  }
+
+  .label {
+    color: #e0e0e0;
+  }
+
+  .textarea {
+    background-color: #2d2d2d;
+    border-color: #404040;
+    color: #e0e0e0;
+  }
+
+  .textarea:focus {
+    border-color: #0099ff;
+    box-shadow: 0 0 0 3px rgba(0, 153, 255, 0.2);
+  }
+
+  .textarea:disabled {
+    background-color: #1a1a1a;
+    color: #666;
+  }
+
+  .helpText {
+    color: #999;
+  }
+
+  .clearButton {
+    background-color: #2d2d2d;
+    border-color: #404040;
+    color: #ccc;
+  }
+
+  .clearButton:hover {
+    background-color: #404040;
+    color: #e0e0e0;
+    border-color: #555;
+  }
+
+  .sendButton {
+    background-color: #0099ff;
+  }
+
+  .sendButton:hover:not(:disabled) {
+    background-color: #0077cc;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .textarea {
+    border-width: 3px;
+  }
+
+  .textarea:focus {
+    border-color: #000;
+    box-shadow: none;
+  }
+
+  .sendButton {
+    border: 2px solid #000;
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .messageInput {
+    padding: 0.75rem;
+  }
+
+  .textarea {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+
+  .sendButton {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .clearButton {
+    padding: 0.375rem;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .sendButton {
+    transition: none;
+  }
+
+  .sendButton:hover:not(:disabled) {
+    transform: none;
+  }
+
+  .spinner {
+    animation: none;
+    border-top-color: transparent;
+    border-right-color: transparent;
+  }
+}

@@ -244,40 +244,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ExtractionResult'
 
-  /contexts/{context_id}/scroll:
-    parameters:
-      - $ref: '#/components/parameters/ContextId'
-
-    post:
-      summary: Scroll page or element
-      tags: [actions]
-      operationId: scroll
-      description: Implements FR-005 (scroll interaction)
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                direction:
-                  type: string
-                  enum: [up, down, left, right, to_element]
-                  default: down
-                distance:
-                  type: integer
-                  description: Pixels to scroll (if not to_element)
-                target:
-                  $ref: '#/components/schemas/ElementTarget'
-                  description: Required if direction = to_element
-      responses:
-        '200':
-          description: Scroll successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ActionResult'
-
   /contexts/{context_id}/elements:
     parameters:
       - $ref: '#/components/parameters/ContextId'

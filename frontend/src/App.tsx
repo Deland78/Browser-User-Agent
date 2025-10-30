@@ -1,4 +1,4 @@
-import { ChatShell } from "./components/chat/ChatShell";
+import { ChatWindow } from "./components/chat";
 import styles from "./App.module.css";
 
 function App() {
@@ -11,7 +11,7 @@ function App() {
         </div>
       </header>
       <main className={styles.mainContent}>
-        <ChatShell />
+        <ChatWindow />
       </main>
     </div>
   );

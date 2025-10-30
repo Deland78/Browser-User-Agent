@@ -1,0 +1,203 @@
+/**
+ * MessageBubble styles
+ * Per Decision 6: Accessible color contrast (WCAG 2.1 AA)
+ */
+
+.bubble {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  max-width: 85%;
+  word-wrap: break-word;
+  animation: slideIn 0.2s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* User messages - aligned right, blue theme */
+.userBubble {
+  align-self: flex-end;
+  background-color: #0066cc;
+  color: white;
+}
+
+/* Agent messages - aligned left, gray theme */
+.agentBubble {
+  align-self: flex-start;
+  background-color: #f5f5f5;
+  color: #1a1a1a;
+  border: 1px solid #e0e0e0;
+}
+
+/* Pending/processing state */
+.pending {
+  opacity: 0.8;
+}
+
+/* Error state - red theme */
+.error {
+  background-color: #ffe6e6;
+  border-color: #ff4444;
+  color: #cc0000;
+}
+
+.error.userBubble {
+  background-color: #cc0000;
+  color: white;
+}
+
+/* Header section */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.sender {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.timestamp {
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+/* Content section */
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.text {
+  margin: 0;
+  line-height: 1.5;
+  font-size: 0.9375rem;
+}
+
+/* Status icons */
+.errorIcon,
+.successIcon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+.errorIcon {
+  color: #ff4444;
+}
+
+.successIcon {
+  color: #22c55e;
+}
+
+/* Metadata display */
+.metadata {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  opacity: 0.8;
+  margin-top: 0.25rem;
+}
+
+.confidence,
+.duration {
+  padding: 0.125rem 0.5rem;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 0.25rem;
+}
+
+.userBubble .confidence,
+.userBubble .duration {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Loading indicator */
+.loadingIndicator {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  padding: 0.25rem 0;
+}
+
+.dot {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background-color: currentColor;
+  opacity: 0.6;
+  animation: pulse 1.4s infinite ease-in-out;
+}
+
+.dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes pulse {
+  0%, 80%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Accessibility: Focus states */
+.bubble:focus-visible {
+  outline: 2px solid #0066cc;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .bubble {
+    border-width: 2px;
+  }
+
+  .agentBubble {
+    border-color: #000;
+  }
+
+  .userBubble {
+    border: 2px solid #003d99;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .bubble {
+    animation: none;
+  }
+
+  .dot {
+    animation: none;
+    opacity: 0.6;
+  }
+}

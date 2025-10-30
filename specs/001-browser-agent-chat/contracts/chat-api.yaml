@@ -376,7 +376,7 @@ components:
           format: uuid
         action_type:
           type: string
-          enum: [navigate, click, type, scroll, extract, wait, back, forward, refresh]
+          enum: [navigate, click, type, extract, wait, back, forward, refresh]
         target:
           type: object
           description: Element identifier or URL (varies by action_type)

@@ -2,7 +2,12 @@
   "permissions": {
     "allow": [
       "Bash(python -m pytest tests/integration/test_chat_api.py::TestMessageEndpoints -v --tb=no -q)",
-      "Bash(python -m pytest tests/integration/test_chat_api.py -v --tb=no -q)"
+      "Bash(python -m pytest tests/integration/test_chat_api.py -v --tb=no -q)",
+      "Bash(npm run build)",
+      "Bash(dir node_modules)",
+      "Bash(npm install)",
+      "Bash(npx tsc --noEmit src/components/chat/*.tsx)",
+      "Bash(powershell -Command \"Get-ChildItem -Recurse -Filter ''*constitution*'' | Select-Object FullName\")"
     ],
     "deny": [],
     "ask": []
